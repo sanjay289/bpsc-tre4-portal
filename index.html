@@ -1,0 +1,2408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPSC TRE 4.0 (Advt. 15/2026) - Bihar Teacher Practice Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Sans Devanagari for crisp Hindi rendering -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans Devanagari', 'sans-serif'],
+                    },
+                    colors: {
+                        bpsc: {
+                            navy: '#0f172a',
+                            indigo: '#1e1b4b',
+                            saffron: '#ea580c',
+                            gold: '#f59e0b',
+                            omrPink: '#fdf2f8',
+                            omrBorder: '#db2777'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* Realistic OMR Bubble Styling */
+        .omr-bubble {
+            width: 34px;
+            height: 34px;
+            border-radius: 9999px;
+            border: 2px solid #db2777;
+            color: #db2777;
+            font-weight: 700;
+            font-size: 0.82rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+            user-select: none;
+            background: #fff;
+        }
+        .omr-bubble:hover {
+            background-color: #fce7f3;
+            transform: scale(1.06);
+        }
+        .omr-bubble.filled {
+            background: radial-gradient(circle at 35% 35%, #1e293b, #020617 80%);
+            border-color: #0f172a;
+            color: #ffffff;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .omr-bubble.correct-ring {
+            box-shadow: 0 0 0 3px #16a34a;
+        }
+        .omr-bubble.wrong-ring {
+            box-shadow: 0 0 0 3px #dc2626;
+        }
+        .omr-sheet-bg {
+            background-color: #fff5f7;
+            background-image: linear-gradient(#fbcfe8 1px, transparent 1px);
+            background-size: 100% 42px;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- TOP OFFICIAL HEADER -->
+    <header class="bg-gradient-to-r from-bpsc-indigo via-slate-900 to-bpsc-indigo text-white shadow-lg sticky top-0 z-40 border-b-4 border-amber-500">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <!-- Brand Title -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchMainTab('dashboard')">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-md text-slate-950 font-black text-xl border border-amber-200">
+                    <i class="fa-solid fa-landmark"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-amber-500 text-slate-950 text-[11px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">Advt. No. 15/2026</span>
+                        <span class="text-xs text-amber-300 font-medium hidden sm:inline"><i class="fa-solid fa-circle-check mr-1"></i>5-Option OMR Pattern</span>
+                    </div>
+                    <h1 class="text-lg sm:text-xl font-extrabold tracking-tight leading-tight">
+                        BPSC TRE 4.0 <span class="text-amber-400 font-semibold">बिहार शिक्षक भर्ती 2026</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Navigation & Language Controls -->
+            <div class="flex items-center flex-wrap gap-2 sm:gap-3">
+                <!-- Language Mode Selector -->
+                <div class="bg-slate-800/90 p-1 rounded-lg border border-slate-700 flex items-center text-xs font-semibold">
+                    <button onclick="setLanguageMode('BOTH')" id="lang-btn-BOTH" class="px-2.5 py-1.5 rounded-md bg-amber-500 text-slate-950 transition">
+                        द्विभाषी (Bi-Lingual)
+                    </button>
+                    <button onclick="setLanguageMode('HI')" id="lang-btn-HI" class="px-2.5 py-1.5 rounded-md text-slate-300 hover:text-white transition">
+                        हिन्दी
+                    </button>
+                    <button onclick="setLanguageMode('EN')" id="lang-btn-EN" class="px-2.5 py-1.5 rounded-md text-slate-300 hover:text-white transition">
+                        English
+                    </button>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center gap-1.5">
+                    <button onclick="switchMainTab('dashboard')" id="nav-dashboard" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white/15 text-amber-300 hover:bg-white/20 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-pen-to-square"></i> <span class="hidden md:inline">Practice Hub</span>
+                    </button>
+                    <button onclick="switchMainTab('syllabus')" id="nav-syllabus" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:bg-white/10 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-book-open"></i> <span class="hidden md:inline">TRE 4.0 Syllabus & Vacancies</span>
+                    </button>
+                    <button onclick="switchMainTab('builder')" id="nav-builder" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:bg-white/10 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-folder-plus"></i> <span class="hidden md:inline">Add Questions</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4"></div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-6 py-6">
+
+        <!-- ==========================================
+             VIEW 1: DASHBOARD & TEST CONFIGURATOR
+             ========================================== -->
+        <section id="view-dashboard" class="space-y-6">
+            <!-- Hero Banner with TRE 4.0 Highlights -->
+            <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl border border-indigo-800/60 relative overflow-hidden">
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-8 space-y-3">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-semibold">
+                            <i class="fa-solid fa-bullhorn"></i> बिहार लोक सेवा आयोग (BPSC) — 33,320 पद (Advt. 15/2026)
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-snug">
+                            Master the Authentic <span class="text-amber-400">5-Option (A-E) OMR</span> Pattern for Bihar Teacher Exam
+                        </h2>
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                            Practice with high-yield questions across <strong>Part I (Qualifying Language)</strong>, <strong>Part II (Bihar Special GK, 1857 Kunwar Singh, Champaran, Geography, Math & Science)</strong>, and <strong>Part III (Subject Specific)</strong>. Includes live Pink OMR Sheet simulation & configurable 1/3rd negative marking!
+                        </p>
+                        <div class="pt-2 flex flex-wrap gap-3 text-xs font-semibold">
+                            <span class="bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                                <i class="fa-solid fa-check-double text-emerald-400"></i> Option (D): उपर्युक्त में से एक से अधिक
+                            </span>
+                            <span class="bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                                <i class="fa-solid fa-ban text-rose-400"></i> Option (E): उपर्युक्त में से कोई नहीं
+                            </span>
+                            <span class="bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                                <i class="fa-solid fa-language text-amber-400"></i> 100% Bilingual Explanations
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats Box -->
+                    <div class="lg:col-span-4 grid grid-cols-2 gap-3">
+                        <div class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/10 text-center">
+                            <div class="text-2xl font-black text-amber-400" id="stat-total-questions">42</div>
+                            <div class="text-xs text-slate-300 font-medium mt-1">Authentic 5-Option MCQs</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/10 text-center">
+                            <div class="text-2xl font-black text-emerald-400">33,320</div>
+                            <div class="text-xs text-slate-300 font-medium mt-1">TRE 4.0 Total Vacancies</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/10 text-center">
+                            <div class="text-2xl font-black text-sky-400">30%</div>
+                            <div class="text-xs text-slate-300 font-medium mt-1">Part-I Qualifying Marks</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/10 text-center">
+                            <div class="text-2xl font-black text-pink-400">5 Bubbles</div>
+                            <div class="text-xs text-slate-300 font-medium mt-1">Interactive OMR Sheet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP-BY-STEP EXAM CONFIGURATOR -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Column: Class Category & Subject Configuration -->
+                <div class="lg:col-span-8 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-amber-600"></i> Configure Your TRE 4.0 Practice Test
+                            </h3>
+                            <p class="text-xs text-slate-500">Select your teacher category, subject stream, and OMR marking rules</p>
+                        </div>
+                        <span class="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-200">
+                            2026 Pattern
+                        </span>
+                    </div>
+
+                    <!-- Step 1: Select Teacher Category -->
+                    <div class="space-y-3">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                            1. Select Class Category (शिक्षक वर्ग चुनें)
+                        </label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <!-- PRT -->
+                            <div onclick="selectCategory('PRT')" id="cat-card-PRT" class="cursor-pointer rounded-xl p-4 border-2 border-indigo-600 bg-indigo-50/60 transition hover:shadow-md">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-extrabold text-sm text-indigo-950">Primary (PRT 1–5)</span>
+                                    <i class="fa-solid fa-circle-check text-indigo-600" id="cat-icon-PRT"></i>
+                                </div>
+                                <p class="text-xs text-slate-600 mb-2">प्राथमिक विद्यालय (कक्षा 1 से 5)</p>
+                                <div class="text-[11px] font-semibold text-indigo-800 bg-indigo-100/80 px-2 py-1 rounded">
+                                    Part I (Lang) + Part II (GS & Bihar GK)
+                                </div>
+                            </div>
+
+                            <!-- Middle 6-8 -->
+                            <div onclick="selectCategory('MIDDLE')" id="cat-card-MIDDLE" class="cursor-pointer rounded-xl p-4 border-2 border-slate-200 bg-white transition hover:border-slate-300 hover:shadow-md">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-extrabold text-sm text-slate-900">Middle (Class 6–8)</span>
+                                    <i class="fa-regular fa-circle text-slate-400" id="cat-icon-MIDDLE"></i>
+                                </div>
+                                <p class="text-xs text-slate-600 mb-2">मध्य विद्यालय (कक्षा 6 से 8)</p>
+                                <div class="text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-1 rounded">
+                                    Part I + Part II (GS) + Part III (Subject)
+                                </div>
+                            </div>
+
+                            <!-- TGT/PGT 9-12 -->
+                            <div onclick="selectCategory('TGTPGT')" id="cat-card-TGTPGT" class="cursor-pointer rounded-xl p-4 border-2 border-slate-200 bg-white transition hover:border-slate-300 hover:shadow-md">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-extrabold text-sm text-slate-900">TGT / PGT (9–12)</span>
+                                    <i class="fa-regular fa-circle text-slate-400" id="cat-icon-TGTPGT"></i>
+                                </div>
+                                <p class="text-xs text-slate-600 mb-2">माध्यमिक एवं उच्च माध्यमिक (9–12)</p>
+                                <div class="text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-1 rounded">
+                                    Part I + Part II (GS) + Part III (Subject)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Select Test Scope / Section Filter -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                2. Select Paper Section / Test Type
+                            </label>
+                            <select id="config-section" onchange="updateQuestionCountPreview()" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-600">
+                                <option value="FULL_MOCK">Full Composite Mock Test (Part I + II + III)</option>
+                                <option value="QUICK_15">Quick High-Yield Revision Set (15 Qs)</option>
+                                <option value="PART_1">Part I Only: Qualifying Language (English & हिन्दी)</option>
+                                <option value="PART_2">Part II Only: General Studies, Bihar GK, Math & Sci</option>
+                                <option value="PART_3_SST">Part III Subject: Social Science (History, Polity, Geo)</option>
+                                <option value="PART_3_SCI">Part III Subject: Mathematics & Science</option>
+                                <option value="PART_3_HINDI">Part III Subject: Hindi Literature & Grammar (हिन्दी)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                3. Part-III Subject Stream (For 6-8 & 9-12)
+                            </label>
+                            <select id="config-stream" onchange="updateQuestionCountPreview()" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-600">
+                                <option value="ALL">All Subjects Combined (Social Sci + Math/Sci + Hindi)</option>
+                                <option value="SST">Social Science (सामाजिक विज्ञान - इतिहास/राजनीति/भूगोल)</option>
+                                <option value="MATH_SCI">Mathematics & Science (गणित एवं विज्ञान)</option>
+                                <option value="HINDI">Hindi Literature (हिन्दी भाषा एवं साहित्य)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Negative Marking & Practice Mode Toggles -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <!-- Negative Marking Rule -->
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase text-slate-600">Negative Marking Rule</span>
+                                <span id="neg-badge" class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">No Negative (0)</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 pt-1">
+                                <button type="button" onclick="setNegativeMode(false)" id="neg-btn-off" class="py-2 px-3 rounded-lg text-xs font-bold bg-indigo-900 text-white shadow-sm transition">
+                                    0 Negative (Standard)
+                                </button>
+                                <button type="button" onclick="setNegativeMode(true)" id="neg-btn-on" class="py-2 px-3 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition">
+                                    -1/3 Strict OMR Rule
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-slate-500 leading-tight">
+                                Toggle between standard 0-negative or strict -0.33 penalty for wrong/unbubbled OMR practice.
+                            </p>
+                        </div>
+
+                        <!-- Exam Mode vs Instant Learn Mode -->
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase text-slate-600">Evaluation Mode</span>
+                                <span id="mode-badge" class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">Instant Learn</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 pt-1">
+                                <button type="button" onclick="setPracticeMode('INSTANT')" id="mode-btn-instant" class="py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 shadow-sm transition">
+                                    Instant Solution
+                                </button>
+                                <button type="button" onclick="setPracticeMode('EXAM')" id="mode-btn-exam" class="py-2 px-3 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition">
+                                    Exam Simulation
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-slate-500 leading-tight">
+                                "Instant Solution" shows bilingual explanation immediately; "Exam Simulation" reveals results on final submit.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Ready to Launch Summary Card -->
+                <div class="lg:col-span-4 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 flex flex-col justify-between space-y-5">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold">
+                                <i class="fa-solid fa-file-signature"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-slate-900">Test Paper Summary</h4>
+                                <p class="text-xs text-slate-500" id="summary-cat-label">Primary Teacher (PRT Class 1-5)</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2.5 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 font-medium">Selected Questions:</span>
+                                <span class="font-bold text-slate-900" id="summary-q-count">30 Questions</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 font-medium">Allotted Duration:</span>
+                                <span class="font-bold text-slate-900" id="summary-duration">35 Minutes</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 font-medium">Options per Question:</span>
+                                <span class="font-bold text-pink-600">5 Options (A, B, C, D, E)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 font-medium">Part-I Qualifying Cutoff:</span>
+                                <span class="font-bold text-emerald-700">30% Minimum Required</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 font-medium">Marking Scheme:</span>
+                                <span class="font-bold text-indigo-700" id="summary-marking">+1.00 / -0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 rounded-xl bg-pink-50 border border-pink-200 text-xs text-pink-900 space-y-1">
+                            <div class="font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-triangle-exclamation text-pink-600"></i> BPSC 5th Option OMR Advisory
+                            </div>
+                            <p class="text-[11px] leading-relaxed text-pink-800">
+                                Do not leave any OMR row blank! If none of (A), (B), or (C) is correct, select <strong>(E) None of the above</strong>. If 2 or more are correct, select <strong>(D) More than one of the above</strong>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button onclick="startExamSession()" class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-black text-base shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-play"></i> Start Practice Test (परीक्षा प्रारंभ करें)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Topic-Wise Quick Launch Cards -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6">
+                <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-amber-500"></i> One-Click Topic Micro-Tests (विषयवार त्वरित अभ्यास)
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    <button onclick="quickStartSection('PART_1')" class="text-left p-4 rounded-xl border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/40 transition group">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-800 text-xs font-bold">Part I • Qualifying</span>
+                            <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-indigo-600 transition"></i>
+                        </div>
+                        <div class="font-bold text-sm text-slate-900">हिन्दी व्याकरण & English</div>
+                        <p class="text-xs text-slate-500 mt-1">संधि, समास, मुहावरे, अलंकार, Grammar & Comprehension</p>
+                    </button>
+
+                    <button onclick="quickStartSection('PART_2')" class="text-left p-4 rounded-xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/40 transition group">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-1 rounded-md bg-amber-100 text-amber-800 text-xs font-bold">Part II • Merit Core</span>
+                            <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-amber-600 transition"></i>
+                        </div>
+                        <div class="font-bold text-sm text-slate-900">Bihar GK, INM, Math & Sci</div>
+                        <p class="text-xs text-slate-500 mt-1">Kunwar Singh, Champaran, Bihar Rivers, 2026 Current Affairs</p>
+                    </button>
+
+                    <button onclick="quickStartSection('PART_3_SST')" class="text-left p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/40 transition group">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 text-xs font-bold">Part III • SST</span>
+                            <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-emerald-600 transition"></i>
+                        </div>
+                        <div class="font-bold text-sm text-slate-900">Social Science (सामाजिक विज्ञान)</div>
+                        <p class="text-xs text-slate-500 mt-1">Modern History, Indian Polity, Constitution & Geography</p>
+                    </button>
+
+                    <button onclick="quickStartSection('PART_3_SCI')" class="text-left p-4 rounded-xl border border-slate-200 hover:border-pink-500 hover:bg-pink-50/40 transition group">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-1 rounded-md bg-pink-100 text-pink-800 text-xs font-bold">Part III • Sci & Hindi</span>
+                            <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-pink-600 transition"></i>
+                        </div>
+                        <div class="font-bold text-sm text-slate-900">Math, Science & साहित्य</div>
+                        <p class="text-xs text-slate-500 mt-1">NCERT Science, Mensuration, Algebra & Hindi Sahitya</p>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==========================================
+             VIEW 2: ACTIVE EXAM & REALISTIC OMR SHEET
+             ========================================== -->
+        <section id="view-exam" class="hidden space-y-4">
+            <!-- Sticky Exam Top Bar -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3.5 sm:px-5 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <button onclick="confirmExitExam()" class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-chevron-left"></i> Exit
+                    </button>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="exam-header-cat" class="text-xs font-extrabold uppercase px-2 py-0.5 rounded bg-indigo-100 text-indigo-900">PRT (1-5)</span>
+                            <span id="exam-header-neg" class="text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">0 Neg</span>
+                        </div>
+                        <h3 class="text-sm sm:text-base font-bold text-slate-900 mt-0.5" id="exam-header-title">BPSC TRE 4.0 Composite Mock</h3>
+                    </div>
+                </div>
+
+                <!-- Timer & OMR Drawer Toggle -->
+                <div class="flex items-center gap-2.5 sm:gap-4">
+                    <div class="flex items-center gap-2 bg-slate-900 text-white px-3.5 py-2 rounded-xl font-mono text-sm sm:text-base font-bold shadow-inner">
+                        <i class="fa-regular fa-clock text-amber-400 animate-pulse"></i>
+                        <span id="exam-timer">35:00</span>
+                    </div>
+
+                    <button onclick="toggleRightPanelMode()" id="btn-toggle-omr-view" class="px-3.5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs sm:text-sm shadow flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-table-cells"></i> <span>OMR Sheet</span>
+                    </button>
+
+                    <button onclick="openSubmitConfirmationModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Test
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Exam Grid: Left Question Arena (8 cols) + Right Palette/OMR Sheet (4 cols) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+                <!-- LEFT: Question Display Area -->
+                <div class="lg:col-span-8 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between min-h-[540px]">
+                    <div>
+                        <!-- Question Meta Bar -->
+                        <div class="bg-slate-50 border-b border-slate-200 px-5 py-3 flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-indigo-900 text-white text-xs font-extrabold px-3 py-1 rounded-lg" id="q-number-badge">
+                                    Question 1 of 30
+                                </span>
+                                <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-amber-100 text-amber-900 border border-amber-200" id="q-part-badge">
+                                    Part II: Bihar Special GK
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs font-semibold">
+                                <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">+1.0 Mark</span>
+                                <span class="text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200" id="q-neg-label">-0.0 Mark</span>
+                            </div>
+                        </div>
+
+                        <!-- Question Prompt (Bilingual / Toggleable) -->
+                        <div class="p-5 sm:p-6 space-y-4">
+                            <div id="q-text-container" class="space-y-3">
+                                <!-- Filled dynamically by JS -->
+                            </div>
+
+                            <!-- 5 Options List (A, B, C, D, E) -->
+                            <div id="q-options-container" class="space-y-2.5 pt-2">
+                                <!-- Filled dynamically by JS -->
+                            </div>
+
+                            <!-- Instant Explanation Box (Visible in Instant Learn Mode after selecting an option) -->
+                            <div id="instant-explanation-box" class="hidden mt-5 rounded-xl p-4 border-2 border-indigo-200 bg-indigo-50/70 space-y-2">
+                                <!-- Filled dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Action Controls -->
+                    <div class="bg-slate-50 border-t border-slate-200 px-5 py-3.5 flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <button onclick="markCurrentForReview()" id="btn-mark-review" class="px-3.5 py-2 rounded-xl border border-amber-400 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-bookmark"></i> <span>Mark for Review</span>
+                            </button>
+                            <button onclick="clearCurrentResponse()" class="px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-eraser"></i> Clear OMR Bubble
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="navigateQuestion(-1)" id="btn-prev-q" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-arrow-left"></i> Previous
+                            </button>
+                            <button onclick="navigateQuestion(1)" id="btn-next-q" class="px-5 py-2 rounded-xl bg-indigo-900 hover:bg-indigo-800 text-white text-xs sm:text-sm font-bold shadow transition flex items-center gap-1.5">
+                                Save & Next <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Toggleable Question Palette & Realistic Pink BPSC OMR Sheet -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <!-- Mode Switch Tabs inside Right Panel -->
+                        <div class="grid grid-cols-2 border-b border-slate-200 text-xs font-bold">
+                            <button onclick="setRightPanelTab('OMR')" id="tab-right-omr" class="py-3 px-3 bg-pink-50 text-pink-800 border-b-2 border-pink-600 flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-circle-dot"></i> BPSC 5-Option OMR
+                            </button>
+                            <button onclick="setRightPanelTab('PALETTE')" id="tab-right-palette" class="py-3 px-3 text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-grip"></i> Question Palette
+                            </button>
+                        </div>
+
+                        <!-- Live OMR & Attempt Counters -->
+                        <div class="grid grid-cols-4 gap-1.5 p-3 bg-slate-50 border-b border-slate-200 text-center text-[11px] font-bold">
+                            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 py-1.5 rounded-lg">
+                                <div class="text-sm font-black" id="count-answered">0</div>
+                                <div>Bubbled</div>
+                            </div>
+                            <div class="bg-rose-50 border border-rose-200 text-rose-800 py-1.5 rounded-lg">
+                                <div class="text-sm font-black" id="count-blank">0</div>
+                                <div>Blank OMR</div>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-200 text-amber-800 py-1.5 rounded-lg">
+                                <div class="text-sm font-black" id="count-review">0</div>
+                                <div>Review</div>
+                            </div>
+                            <div class="bg-slate-100 border border-slate-300 text-slate-700 py-1.5 rounded-lg">
+                                <div class="text-sm font-black" id="count-unvisited">0</div>
+                                <div>Unvisited</div>
+                            </div>
+                        </div>
+
+                        <!-- SUB-VIEW A: REALISTIC PINK BPSC OMR BUBBLE SHEET -->
+                        <div id="right-panel-omr" class="omr-sheet-bg max-h-[430px] overflow-y-auto p-3.5 space-y-1">
+                            <div class="flex items-center justify-between pb-2 mb-2 border-b-2 border-pink-400 text-[11px] font-extrabold text-pink-900 uppercase tracking-wider">
+                                <span>Q.No.</span>
+                                <span class="pr-3">Darken One Circle Only (A / B / C / D / E)</span>
+                            </div>
+                            <div id="omr-rows-container" class="space-y-1.5">
+                                <!-- Generated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- SUB-VIEW B: QUESTION NUMBER PALETTE -->
+                        <div id="right-panel-palette" class="hidden max-h-[430px] overflow-y-auto p-4">
+                            <div id="palette-grid-container" class="grid grid-cols-5 gap-2.5">
+                                <!-- Generated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Blank OMR Warning Footer -->
+                        <div class="p-3 bg-pink-950 text-pink-100 text-[11px] flex items-center justify-between">
+                            <span><i class="fa-solid fa-circle-info text-amber-400 mr-1"></i> Click any bubble A-E to fill OMR directly</span>
+                            <span id="omr-blank-warning" class="font-bold text-amber-300"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==========================================
+             VIEW 3: SCORECARD, MERIT CHECK & SOLUTIONS
+             ========================================== -->
+        <section id="view-result" class="hidden space-y-6">
+            <!-- Top Merit & Qualifying Status Banner -->
+            <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl border border-indigo-800">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase">
+                            BPSC TRE 4.0 Official OMR Evaluation Report
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-black mt-2" id="result-headline">Test Scorecard & Merit Analysis</h2>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="switchMainTab('dashboard')" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> New Practice Test
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Score Metric Cards -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 pt-6">
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/15">
+                        <div class="text-xs text-slate-300">Final Merit Score</div>
+                        <div class="text-2xl font-black text-amber-400 mt-1" id="res-merit-score">0 / 0</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Part II + III</div>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/15">
+                        <div class="text-xs text-slate-300">Overall Score</div>
+                        <div class="text-2xl font-black text-white mt-1" id="res-total-score">0.00</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5" id="res-total-max">Out of 30</div>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/15">
+                        <div class="text-xs text-slate-300">Part-I Qualifying</div>
+                        <div class="text-lg font-black mt-1" id="res-part1-status">QUALIFIED</div>
+                        <div class="text-[11px] text-slate-300 mt-0.5" id="res-part1-marks">Needs 30% min</div>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/15">
+                        <div class="text-xs text-slate-300">Correct / Wrong</div>
+                        <div class="text-xl font-black text-emerald-400 mt-1" id="res-correct-wrong">0 / 0</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5" id="res-skipped-count">0 Blank OMR</div>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/15">
+                        <div class="text-xs text-slate-300">Negative Penalty</div>
+                        <div class="text-xl font-black text-rose-400 mt-1" id="res-neg-deducted">-0.00</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5" id="res-neg-rule-text">Rule Applied</div>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/15">
+                        <div class="text-xs text-slate-300">Accuracy & Time</div>
+                        <div class="text-xl font-black text-sky-400 mt-1" id="res-accuracy">0%</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5" id="res-time-taken">Time: 0m 0s</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section-wise Breakdown & OMR Option D/E Insight -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6">
+                    <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-indigo-600"></i> Section-Wise Performance Breakdown
+                    </h3>
+                    <div id="section-breakdown-bars" class="space-y-4">
+                        <!-- Dynamically rendered progress bars -->
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 flex flex-col justify-between space-y-4">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass-chart text-pink-600"></i> 5th Option (D & E) Trap Analysis
+                        </h3>
+                        <p class="text-xs text-slate-500 mb-4">
+                            In BPSC TRE exams, 20%–25% of questions test your mastery of Option (D) "More than one" and Option (E) "None of the above".
+                        </p>
+                        <div id="de-trap-stats" class="space-y-2.5 text-xs">
+                            <!-- Filled dynamically -->
+                        </div>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
+                        <strong><i class="fa-solid fa-lightbulb mr-1"></i> Mentor Tip:</strong> Review all questions below with bilingual explanations. You can switch between Hindi & English at the top bar anytime!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Solution Review with Filter Buttons -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open-reader text-emerald-600"></i> Detailed Bilingual Solutions & OMR Key
+                    </h3>
+                    <div class="flex flex-wrap gap-1.5 text-xs font-bold">
+                        <button onclick="filterSolutions('ALL')" id="sol-filter-ALL" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white">All Questions</button>
+                        <button onclick="filterSolutions('CORRECT')" id="sol-filter-CORRECT" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">Correct</button>
+                        <button onclick="filterSolutions('WRONG')" id="sol-filter-WRONG" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-800 border border-rose-200">Incorrect</button>
+                        <button onclick="filterSolutions('SKIPPED')" id="sol-filter-SKIPPED" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-800 border border-amber-200">Blank OMR</button>
+                    </div>
+                </div>
+
+                <div id="solutions-list-container" class="space-y-4">
+                    <!-- Rendered dynamically -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==========================================
+             VIEW 4: SYLLABUS & VACANCY REFERENCE (ADVT 15/2026)
+             ========================================== -->
+        <section id="view-syllabus" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
+                <div class="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-extrabold uppercase px-2.5 py-1 rounded bg-amber-100 text-amber-900">Official Notification Summary</span>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-900 mt-1">BPSC TRE 4.0 (Advt. No. 15/2026) — 33,320 Vacancies & Pattern (Revised)</h2>
+                    </div>
+                    <button onclick="switchMainTab('dashboard')" class="px-4 py-2 rounded-xl bg-indigo-900 text-white text-xs font-bold hover:bg-indigo-800 transition">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Back to Practice Test
+                    </button>
+                </div>
+
+                <!-- Vacancy Breakdown Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-200">
+                        <div class="text-xs font-bold text-indigo-800 uppercase">Primary School (Class 1–5)</div>
+                        <div class="text-2xl font-black text-indigo-950 mt-1">3,847 Posts</div>
+                        <p class="text-xs text-slate-600 mt-1">General, Urdu & Bangla Primary Teachers</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200">
+                        <div class="text-xs font-bold text-emerald-800 uppercase">Middle School (Class 6–8)</div>
+                        <div class="text-2xl font-black text-emerald-950 mt-1">8,563 Posts</div>
+                        <p class="text-xs text-slate-600 mt-1">Math & Science, Social Science, Hindi, English, Sanskrit, Urdu</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200">
+                        <div class="text-xs font-bold text-amber-800 uppercase">Secondary TGT (Class 9–10)</div>
+                        <div class="text-2xl font-black text-amber-950 mt-1">4,370 Posts</div>
+                        <p class="text-xs text-slate-600 mt-1">Secondary + Special School Teachers (68 Posts)</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-pink-50 border border-pink-200">
+                        <div class="text-xs font-bold text-pink-800 uppercase">Higher Secondary PGT (11–12)</div>
+                        <div class="text-2xl font-black text-pink-950 mt-1">16,540 Posts</div>
+                        <p class="text-xs text-slate-600 mt-1">29+ Subjects across Arts, Science & Commerce</p>
+                    </div>
+                </div>
+
+                <!-- Paper Pattern Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                        <thead>
+                            <tr class="bg-slate-900 text-white">
+                                <th class="p-3.5 rounded-tl-xl">Category</th>
+                                <th class="p-3.5">Total Qs / Marks</th>
+                                <th class="p-3.5">Duration</th>
+                                <th class="p-3.5">Paper Structure (Single Composite Booklet)</th>
+                                <th class="p-3.5 rounded-tr-xl">Merit Calculation Rule</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 border border-slate-200">
+                            <tr class="bg-white">
+                                <td class="p-3.5 font-bold text-indigo-950">Primary Teacher (PRT 1–5)</td>
+                                <td class="p-3.5 font-semibold">150 Qs (150 Marks)</td>
+                                <td class="p-3.5">2 Hours 30 Mins</td>
+                                <td class="p-3.5">
+                                    <strong>Part I (30 Marks):</strong> English & Hindi/Urdu/Bangla (Qualifying - 30% = 9 Marks)<br>
+                                    <strong>Part II (120 Marks):</strong> General Studies (Math, Reasoning, Science, SST, INM, Bihar GK, EVS)
+                                </td>
+                                <td class="p-3.5 font-semibold text-emerald-700">Prepared solely on Part II (120 Marks) after qualifying Part I</td>
+                            </tr>
+                            <tr class="bg-slate-50">
+                                <td class="p-3.5 font-bold text-indigo-950">Middle School (Class 6–8)</td>
+                                <td class="p-3.5 font-semibold">150 Qs (150 Marks)</td>
+                                <td class="p-3.5">2 Hours 30 Mins</td>
+                                <td class="p-3.5">
+                                    <strong>Part I (30 Marks):</strong> Qualifying Language (Min 30%)<br>
+                                    <strong>Part II (40 Marks):</strong> General Studies & Bihar GK<br>
+                                    <strong>Part III (80 Marks):</strong> Concerned Subject (SST / Math & Sci / Language)
+                                </td>
+                                <td class="p-3.5 font-semibold text-emerald-700">Prepared on Part II + Part III (120 Marks Combined)</td>
+                            </tr>
+                            <tr class="bg-white">
+                                <td class="p-3.5 font-bold text-indigo-950">Secondary (9–10) & PGT (11–12)</td>
+                                <td class="p-3.5 font-semibold">150 Qs (150 Marks)</td>
+                                <td class="p-3.5">2 Hours 30 Mins</td>
+                                <td class="p-3.5">
+                                    <strong>Part I (30 Marks):</strong> Qualifying Language (Min 30%)<br>
+                                    <strong>Part II (40 Marks):</strong> General Studies, Math, Science, INM, Bihar Geography<br>
+                                    <strong>Part III (80 Marks):</strong> Specific NCERT/SCERT Domain Subject
+                                </td>
+                                <td class="p-3.5 font-semibold text-emerald-700">Prepared on Part II + Part III (120 Marks Combined)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==========================================
+             VIEW 5: CUSTOM QUESTION BUILDER & JSON IMPORT
+             ========================================== -->
+        <section id="view-builder" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Add Single Bilingual Question Form -->
+                <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                    <div class="border-b border-slate-100 pb-3">
+                        <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle text-amber-500"></i> Add Custom 5-Option BPSC Question
+                        </h3>
+                        <p class="text-xs text-slate-500">Questions added here are saved locally in your browser and included in practice tests.</p>
+                    </div>
+
+                    <form id="custom-q-form" onsubmit="handleSaveCustomQuestion(event)" class="space-y-3.5 text-xs sm:text-sm">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Paper Section</label>
+                                <select id="cq-part" required class="w-full rounded-lg border border-slate-300 p-2">
+                                    <option value="PART_1">Part I: Qualifying Language</option>
+                                    <option value="PART_2" selected>Part II: General Studies & Bihar GK</option>
+                                    <option value="PART_3_SST">Part III: Social Science</option>
+                                    <option value="PART_3_SCI">Part III: Math & Science</option>
+                                    <option value="PART_3_HINDI">Part III: Hindi Literature</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Topic Tag</label>
+                                <input type="text" id="cq-topic" required placeholder="e.g., Bihar History / संधि" class="w-full rounded-lg border border-slate-300 p-2">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Question in Hindi (प्रश्न हिन्दी में)</label>
+                            <textarea id="cq-q-hi" rows="2" required placeholder="उदाहरण: 1857 के विद्रोह में बिहार का नेतृत्व किसने किया था?" class="w-full rounded-lg border border-slate-300 p-2"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Question in English</label>
+                            <textarea id="cq-q-en" rows="2" required placeholder="e.g., Who led the Revolt of 1857 in Bihar?" class="w-full rounded-lg border border-slate-300 p-2"></textarea>
+                        </div>
+
+                        <!-- Options A, B, C (D & E auto-filled with BPSC standard) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Option (A) Hindi / Eng</label>
+                                <input type="text" id="cq-optA" required placeholder="कुंवर सिंह / Kunwar Singh" class="w-full rounded-lg border border-slate-300 p-2">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Option (B) Hindi / Eng</label>
+                                <input type="text" id="cq-optB" required placeholder="नाना साहब / Nana Saheb" class="w-full rounded-lg border border-slate-300 p-2">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Option (C) Hindi / Eng</label>
+                                <input type="text" id="cq-optC" required placeholder="तात्या टोपे / Tatya Tope" class="w-full rounded-lg border border-slate-300 p-2">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Correct OMR Option (A–E)</label>
+                                <select id="cq-ans" required class="w-full rounded-lg border border-slate-300 p-2 font-bold text-indigo-900">
+                                    <option value="0">(A)</option>
+                                    <option value="1">(B)</option>
+                                    <option value="2">(C)</option>
+                                    <option value="3">(D) उपर्युक्त में से एक से अधिक / More than one</option>
+                                    <option value="4">(E) उपर्युक्त में से कोई नहीं / None of the above</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Bilingual Explanation (व्याख्या)</label>
+                                <input type="text" id="cq-exp" required placeholder="Brief explanation for students..." class="w-full rounded-lg border border-slate-300 p-2">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 rounded-xl bg-indigo-900 hover:bg-indigo-800 text-white font-bold shadow transition">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> Save Question to Local Bank
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right: Saved Custom Questions Manager -->
+                <div class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+                            <h4 class="font-bold text-slate-900">Custom Questions Added (<span id="custom-q-counter">0</span>)</h4>
+                            <button onclick="clearAllCustomQuestions()" class="text-xs text-rose-600 hover:underline font-semibold">Reset Custom Bank</button>
+                        </div>
+                        <div id="custom-q-list" class="space-y-2.5 max-h-[380px] overflow-y-auto text-xs">
+                            <!-- Filled dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
+                        <div class="font-bold text-slate-800"><i class="fa-solid fa-database text-indigo-600 mr-1"></i> Standard BPSC Options (D) & (E)</div>
+                        <p class="text-slate-600">
+                            Options (D) <em>"More than one of the above"</em> and (E) <em>"None of the above"</em> are automatically attached to every custom question for authentic TRE 4.0 practice.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SUBMIT CONFIRMATION MODAL (No browser alert/confirm used) -->
+    <div id="modal-submit" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-5">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-file-circle-check"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-extrabold text-slate-900">Submit BPSC OMR Sheet?</h3>
+                    <p class="text-xs text-slate-500">Please verify your OMR bubble status before final submission</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2.5 text-center text-xs font-bold">
+                <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+                    <div class="text-lg font-black" id="modal-ans-count">0</div>
+                    <div>Bubbled</div>
+                </div>
+                <div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800">
+                    <div class="text-lg font-black" id="modal-blank-count">0</div>
+                    <div>Blank OMR</div>
+                </div>
+                <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800">
+                    <div class="text-lg font-black" id="modal-rev-count">0</div>
+                    <div>Marked Review</div>
+                </div>
+            </div>
+
+            <div id="modal-omr-alert" class="p-3 rounded-xl bg-pink-50 border border-pink-200 text-xs text-pink-900">
+                <!-- Dynamic warning if blank rows exist -->
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button onclick="closeSubmitConfirmationModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-100">
+                    Return to OMR Sheet
+                </button>
+                <button onclick="finalizeAndGradeExam()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md">
+                    Confirm & View Scorecard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXIT EXAM MODAL -->
+    <div id="modal-exit" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <h3 class="text-base font-extrabold text-slate-900">Exit Current Practice Test?</h3>
+            <p class="text-xs text-slate-600">Your current OMR progress will be discarded if you return to the dashboard without submitting.</p>
+            <div class="flex justify-end gap-2.5 pt-2">
+                <button onclick="closeExitModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700">Continue Test</button>
+                <button onclick="forceExitToDashboard()" class="px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold">Exit to Hub</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-4 px-4 border-t border-slate-800 mt-8">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div>
+                <strong>BPSC TRE 4.0 Practice Portal (Advt. 15/2026)</strong> • Built for Bihar Primary, Middle, Secondary & Higher Secondary Aspirants
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-amber-400 font-semibold">5-Option OMR Ready</span>
+                <span>•</span>
+                <span>हिन्दी & English Bilingual</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         APPLICATION LOGIC & RICH BPSC QUESTION BANK
+         ========================================== -->
+    <script>
+        // Standard BPSC Options D & E Constants
+        const OPT_D_HI = "उपर्युक्त में से एक से अधिक";
+        const OPT_D_EN = "More than one of the above";
+        const OPT_E_HI = "उपर्युक्त में से कोई नहीं";
+        const OPT_E_EN = "None of the above";
+
+        // Built-in Authentic BPSC TRE 4.0 Question Bank (42 Questions across Part I, Part II, and Part III)
+        const DEFAULT_QUESTION_BANK = [
+            // ================= PART I: QUALIFYING LANGUAGE (ENGLISH & HINDI) =================
+            {
+                id: "P1_01",
+                part: "PART_1",
+                topic: "हिन्दी व्याकरण - संधि",
+                qHi: "'महर्षि' शब्द में कौन-सी संधि है?",
+                qEn: "Which Sandhi (euphonic combination) is present in the Hindi word 'Maharshi' (महर्षि)?",
+                optionsHi: ["दीर्घ स्वर संधि", "गुण स्वर संधि", "वृद्धि स्वर संधि", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Dirgha Swara Sandhi", "Guna Swara Sandhi", "Vriddhi Swara Sandhi", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "'महा + ऋषि = महर्षि' में 'आ + ऋ = अर्' का नियम लागू होता है, जो गुण स्वर संधि का उदाहरण है।",
+                expEn: "'Maha + Rishi = Maharshi' follows the 'Aa + Ri = Ar' rule, which is a classic example of Guna Swara Sandhi."
+            },
+            {
+                id: "P1_02",
+                part: "PART_1",
+                topic: "हिन्दी व्याकरण - समास",
+                qHi: "'नीलकंठ' और 'दशानन' (जब वे शिव और रावण के विशेष अर्थ में प्रयुक्त हों) में कौन-सा समास है?",
+                qEn: "Which Samas (compound) is present in 'Neelkanth' and 'Dashanan' when referring specifically to Lord Shiva and Ravana?",
+                optionsHi: ["तत्पुरुष समास", "द्वंद्व समास", "बहुव्रीहि समास", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Tatpurusha Samas", "Dwandwa Samas", "Bahuvrihi Samas", OPT_D_EN, OPT_E_EN],
+                correct: 2,
+                expHi: "जब दोनों पद मिलकर किसी तीसरे विशेष अर्थ (शिव या रावण) की ओर संकेत करते हैं, तब वहाँ बहुव्रीहि समास होता है।",
+                expEn: "When both constituent words combine to denote a third specific entity (Shiva or Ravana), it is Bahuvrihi Samas."
+            },
+            {
+                id: "P1_03",
+                part: "PART_1",
+                topic: "हिन्दी मुहावरे",
+                qHi: "'अंगूठा दिखाना' मुहावरे का सही अर्थ क्या है?",
+                qEn: "What is the correct meaning of the Hindi idiom 'Angootha Dikhana' (अंगूठा दिखाना)?",
+                optionsHi: ["समय पर काम करने से साफ मना कर देना", "विजय प्राप्त करना", "सहमति प्रकट करना", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["To refuse flatly at the time of need", "To achieve victory", "To express agreement", OPT_D_EN, OPT_E_EN],
+                correct: 0,
+                expHi: "'अंगूठा दिखाना' मुहावरे का अर्थ है—आवश्यकता पड़ने या समय आने पर मदद करने से साफ इनकार कर देना।",
+                expEn: "'Angootha Dikhana' means refusing help flatly when someone counts on you."
+            },
+            {
+                id: "P1_04",
+                part: "PART_1",
+                topic: "हिन्दी व्याकरण - अलंकार",
+                qHi: "'कनक कनक ते सौ गुनी, मादकता अधिकाय' पंक्ति में कौन-सा अलंकार है?",
+                qEn: "Which figure of speech (Alankar) is used in 'Kanak Kanak te sau guni, madakta adhikay'?",
+                optionsHi: ["यमक अलंकार", "श्लेष अलंकार", "उपमा अलंकार", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Yamak Alankar", "Shlesh Alankar", "Upama Alankar", OPT_D_EN, OPT_E_EN],
+                correct: 0,
+                expHi: "यहाँ 'कनक' शब्द दो बार आया है और दोनों बार अर्थ भिन्न है (सोना और धतूरा), अतः यहाँ 'यमक अलंकार' है।",
+                expEn: "Here the word 'Kanak' repeats twice with different meanings (Gold and Datura), making it 'Yamak Alankar'."
+            },
+            {
+                id: "P1_05",
+                part: "PART_1",
+                topic: "English Grammar - Prepositions",
+                qHi: "रिक्त स्थान की पूर्ति करें: 'She prefers tea ___ coffee.'",
+                qEn: "Fill in the blank with the correct preposition: 'She prefers tea ___ coffee.'",
+                optionsHi: ["than", "to", "from", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["than", "to", "from", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "अंग्रेजी व्याकरण में 'prefer', 'senior', 'junior' के साथ तुलना करने के लिए 'than' के स्थान पर 'to' का प्रयोग होता है।",
+                expEn: "In standard English grammar, 'prefer' takes the preposition 'to' instead of 'than' (She prefers tea to coffee)."
+            },
+            {
+                id: "P1_06",
+                part: "PART_1",
+                topic: "English Vocabulary - Synonym",
+                qHi: "शब्द 'CANDID' का सही पर्यायवाची (Synonym) चुनें:",
+                qEn: "Which of the following words is a valid synonym for 'CANDID'?",
+                optionsHi: ["Frank (स्पष्टवादी)", "Honest (ईमानदार)", "Forthright (निष्कपट)", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Frank", "Honest", "Forthright", OPT_D_EN, OPT_E_EN],
+                correct: 3,
+                expHi: "'Candid' का अर्थ स्पष्टवादी, निष्कपट और ईमानदार होता है। अतः A, B और C तीनों सही हैं, इसलिए विकल्प (D) 'उपर्युक्त में से एक से अधिक' सही उत्तर है।",
+                expEn: "'Candid' means frank, honest, and forthright. Since all three options (A, B, C) are correct synonyms, Option (D) 'More than one of the above' is the right choice."
+            },
+            {
+                id: "P1_07",
+                part: "PART_1",
+                topic: "हिन्दी वर्तनी शुद्धि",
+                qHi: "निम्नलिखित में से कौन-सा शब्द शुद्ध वर्तनी वाला है?",
+                qEn: "Which of the following Hindi words is spelled correctly (शुद्ध वर्तनी)?",
+                optionsHi: ["उज्ज्वल", "कवयित्री", "जीजीविषा", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["उज्ज्वल (Ujjwal)", "कवयित्री (Kavayitri)", "जीजीविषा (Jijivisha)", OPT_D_EN, OPT_E_EN],
+                correct: 3,
+                expHi: "'उज्ज्वल' (दो आधे ज) और 'कवयित्री' दोनों पूर्णतः शुद्ध हैं (जबकि जिजीविषा होता है)। दो विकल्प सही होने के कारण उत्तर (D) होगा।",
+                expEn: "Both 'उज्ज्वल' and 'कवयित्री' are spelled correctly. Because more than one option is correct, Option (D) is the right answer."
+            },
+            {
+                id: "P1_08",
+                part: "PART_1",
+                topic: "English Grammar - Articles",
+                qHi: "सही आर्टिकल चुनें: 'He is ___ S.D.O. posted in Begusarai.'",
+                qEn: "Choose the correct article: 'He is ___ S.D.O. posted in Begusarai.'",
+                optionsHi: ["a", "an", "the", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["a", "an", "the", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "'S.D.O.' का उच्चारण 'एस' (स्वर ध्वनि 'ए') से शुरू होता है, इसलिए इसके पूर्व 'an' का प्रयोग होगा।",
+                expEn: "Although 'S' is a consonant letter, the abbreviation 'S.D.O.' starts with a vowel sound ('Ess'), so it takes the article 'an'."
+            },
+
+            // ================= PART II: GENERAL STUDIES, BIHAR GK, INM, MATH & SCIENCE =================
+            {
+                id: "P2_01",
+                part: "PART_2",
+                topic: "Bihar INM - 1857 Revolt",
+                qHi: "1857 के विद्रोह के दौरान बिहार में क्रांतिकारियों का नेतृत्व मुख्य रूप से किसने किया था?",
+                qEn: "Who primarily spearheaded the Revolt of 1857 in Bihar?",
+                optionsHi: ["बाबू कुंवर सिंह", "बिरसा मुंडा", "सहजानंद सरस्वती", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Babu Kunwar Singh", "Birsa Munda", "Sahajanand Saraswati", OPT_D_EN, OPT_E_EN],
+                correct: 0,
+                expHi: "भोजपुर (आरा) के जगदीशपुर के जमींदार बाबू वीर कुंवर सिंह ने 80 वर्ष की आयु में 1857 की क्रांति में बिहार का नेतृत्व किया था।",
+                expEn: "Babu Veer Kunwar Singh, the zamindar of Jagdishpur (Bhojpur/Arrah), heroically led the Revolt of 1857 in Bihar."
+            },
+            {
+                id: "P2_02",
+                part: "PART_2",
+                topic: "Champaran Satyagraha 1917",
+                qHi: "1917 के चंपारण सत्याग्रह के लिए महात्मा गांधी को बिहार आने का निमंत्रण किसने दिया था?",
+                qEn: "Who persuaded महात्मा गांधी at the 1916 Lucknow Session to visit Champaran to investigate the Tinkathia system?",
+                optionsHi: ["राजकुमार शुक्ल", "डॉ. राजेंद्र प्रसाद", "अनुग्रह नारायण सिन्हा", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Raj Kumar Shukla", "Dr. Rajendra Prasad", "Anugrah Narayan Sinha", OPT_D_EN, OPT_E_EN],
+                correct: 0,
+                expHi: "मुरली भरहवा गाँव (चंपारण) के किसान राजकुमार शुक्ल ने 1916 के लखनऊ कांग्रेस अधिवेशन में गांधीजी को तिनकठिया प्रथा (3/20 भाग पर नील की खेती) के विरुद्ध चंपारण आने हेतु राजी किया था।",
+                expEn: "Peasant leader Raj Kumar Shukla of Murli Bharahwa village persuaded Mahatma Gandhi at the 1916 Lucknow Congress Session to visit Champaran."
+            },
+            {
+                id: "P2_03",
+                part: "PART_2",
+                topic: "Geography of Bihar - Rivers",
+                qHi: "निम्नलिखित में से कौन-सी नदी बिहार में गंगा नदी में उत्तर दिशा से आकर मिलती है?",
+                qEn: "Which of the following rivers joins the Ganga River from the North in Bihar?",
+                optionsHi: ["गंडक नदी", "कोसी नदी", "बागमती / कमला", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Gandak River", "Kosi River", "Bagmati / Kamla", OPT_D_EN, OPT_E_EN],
+                correct: 3,
+                expHi: "गंडक, बूढ़ी गंडक, बागमती, कमला और कोसी—ये सभी उत्तर बिहार की नदियाँ हैं जो हिमालय से निकलकर उत्तर दिशा से गंगा प्रणाली में मिलती हैं। अतः उत्तर (D) 'उपर्युक्त में से एक से अधिक' होगा।",
+                expEn: "Gandak, Kosi, and Bagmati are all northern tributaries flowing from the Himalayas into the Ganga basin in North Bihar. Hence Option (D) 'More than one of the above' is correct."
+            },
+            {
+                id: "P2_04",
+                part: "PART_2",
+                topic: "Bihar Special - Ramsar & Ecology",
+                qHi: "बिहार का प्रथम रामसर स्थल (Ramsar Site) 'कावर झील' (Kabartal Wetland) किस जिले में स्थित है?",
+                qEn: "In which district of Bihar is 'Kabartal Wetland' (Kanwar Lake), Bihar's first designated Ramsar Site, located?",
+                optionsHi: ["दरभंगा", "बेगूसराय", "कटिहार", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Darbhanga", "Begusarai", "Katihar", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "कावर झील (Kabartal) बिहार के बेगूसराय जिले के मंझौल में स्थित एशिया की प्रमुख गोखुर झील (Oxbow lake) है, जिसे 2020 में बिहार का पहला रामसर स्थल घोषित किया गया।",
+                expEn: "Kanwar Lake (Kabartal Wetland), a prominent oxbow lake in Begusarai district, was recognized as Bihar's first Ramsar site in 2020."
+            },
+            {
+                id: "P2_05",
+                part: "PART_2",
+                topic: "Bihar Special - Tiger & Wildlife",
+                qHi: "वाल्मीकि टाइगर रिजर्व (Valmiki Tiger Reserve - VTR) बिहार के किस जिले में स्थित है?",
+                qEn: "In which district of Bihar is the Valmiki Tiger Reserve (VTR) situated?",
+                optionsHi: ["पूर्वी चंपारण", "पश्चिमी चंपारण", "कैमूर", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["East Champaran", "West Champaran", "Kaimur", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "वाल्मीकि राष्ट्रीय उद्यान एवं टाइगर रिजर्व बिहार के पश्चिमी चंपारण (West Champaran) जिले में नेपाल सीमा के पास स्थित है।",
+                expEn: "Valmiki National Park and Tiger Reserve is located in the West Champaran district of Bihar along the Indo-Nepal border."
+            },
+            {
+                id: "P2_06",
+                part: "PART_2",
+                topic: "Indian National Movement - Quit India",
+                qHi: "1942 के भारत छोड़ो आंदोलन के दौरान जयप्रकाश नारायण ने किस जेल से पलायन कर भूमिगत 'आजाद दस्ता' का गठन किया था?",
+                qEn: "From which prison did Jayaprakash Narayan escape on Diwali night during the 1942 Quit India Movement to organize the 'Azad Dasta'?",
+                optionsHi: ["बांकीपुर केंद्रीय कारागार", "हजारीबाग केंद्रीय कारागार", "भागलपुर जेल", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Bankipore Central Jail", "Hazaribagh Central Jail", "Bhagalpur Central Jail", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "जयप्रकाश नारायण ने 9 नवंबर 1942 (दीपावली की रात) को हजारीबाग सेंट्रल जेल से अपने साथियों के साथ पलायन किया और नेपाल के राजविलास जंगल में 'आजाद दस्ता' का गठन किया।",
+                expEn: "Jayaprakash Narayan scaled the walls of Hazaribagh Central Jail on November 9, 1942 (Diwali night) and formed the guerrilla 'Azad Dasta' in Nepal."
+            },
+            {
+                id: "P2_07",
+                part: "PART_2",
+                topic: "Bihar History - Kisan Sabha",
+                qHi: "1929 में 'बिहार प्रांतीय किसान सभा' और 1936 में 'अखिल भारतीय किसान सभा' के प्रथम अध्यक्ष कौन थे?",
+                qEn: "Who founded the Bihar Provincial Kisan Sabha in 1929 and presided over the first All India Kisan Sabha in 1936?",
+                optionsHi: ["स्वामी सहजानंद सरस्वती", "कार्यानंद शर्मा", "राहुल सांकृत्यायन", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Swami Sahajanand Saraswati", "Karyanand Sharma", "Rahul Sankrityayan", OPT_D_EN, OPT_E_EN],
+                correct: 0,
+                expHi: "स्वामी सहजानंद सरस्वती ने 1929 में सोनपुर मेले में बिहार प्रांतीय किसान सभा की स्थापना की और 1936 में लखनऊ में अखिल भारतीय किसान सभा के प्रथम अध्यक्ष बने।",
+                expEn: "Swami Sahajanand Saraswati founded the Bihar Provincial Kisan Sabha in 1929 at Sonepur and presided over the 1936 All India Kisan Sabha in Lucknow."
+            },
+            {
+                id: "P2_08",
+                part: "PART_2",
+                topic: "Bihar Census & Demographics",
+                qHi: "जनगणना 2011 के अनुसार बिहार का सर्वाधिक साक्षरता दर वाला जिला कौन-सा है?",
+                qEn: "According to the 2011 Census, which district of Bihar has the highest literacy rate (73.37%)?",
+                optionsHi: ["पटना", "भोजपुर", "मुंगेर", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Patna", "Bhojpur", "Munger", OPT_D_EN, OPT_E_EN],
+                correct: 4,
+                expHi: "2011 की जनगणना के अनुसार बिहार का सर्वाधिक साक्षरता दर वाला जिला 'रोहतास' (73.37%) है। चूँकि रोहतास विकल्प A, B, C में नहीं है, इसलिए उत्तर (E) उपर्युक्त में से कोई नहीं है!",
+                expEn: "Rohtas district has the highest literacy rate in Bihar (73.37%). Since Rohtas is not listed in A, B, or C, Option (E) None of the above is correct!"
+            },
+            {
+                id: "P2_09",
+                part: "PART_2",
+                topic: "Current Affairs & Bihar 2026",
+                qHi: "बिहार में नालंदा महाविहार और राजगीर के ऐतिहासिक महत्व के संदर्भ में कौन-सा कथन सत्य है?",
+                qEn: "Which of the following statements is correct regarding Bihar's heritage and sports hubs in Rajgir/Nalanda?",
+                optionsHi: ["नालंदा महाविहार यूनेस्को (UNESCO) विश्व धरोहर स्थल है", "राजगीर में बिहार खेल विश्वविद्यालय और अंतरराष्ट्रीय क्रिकेट स्टेडियम परिसर विकसित किया गया है", "प्राचीन नालंदा विश्वविद्यालय की स्थापना गुप्त शासक कुमारगुप्त प्रथम ने की थी", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Nalanda Mahavihara is a UNESCO World Heritage Site", "Bihar Sports University & International Sports Complex are located in Rajgir", "Ancient Nalanda Mahavihara was founded by Kumaragupta I", OPT_D_EN, OPT_E_EN],
+                correct: 3,
+                expHi: "तीनों कथन सत्य हैं: नालंदा महाविहार 2016 में यूनेस्को धरोहर बना, इसकी स्थापना कुमारगुप्त प्रथम ने की थी, और राजगीर में बिहार खेल विश्वविद्यालय स्थापित है। अतः उत्तर (D) होगा।",
+                expEn: "All three statements (A, B, and C) are factually accurate regarding Nalanda and Rajgir. Hence Option (D) 'More than one of the above' is correct."
+            },
+            {
+                id: "P2_10",
+                part: "PART_2",
+                topic: "Elementary Mathematics",
+                qHi: "यदि किसी वस्तु का क्रय मूल्य (CP) 800 रुपये है और उसे 20% लाभ पर बेचा जाता है, तो उसका विक्रय मूल्य (SP) क्या होगा?",
+                qEn: "If the Cost Price (CP) of an article is ₹800 and it is sold at a profit of 20%, what is its Selling Price (SP)?",
+                optionsHi: ["₹920", "₹960", "₹1,000", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["₹920", "₹960", "₹1,000", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "विक्रय मूल्य (SP) = 800 × (120 / 100) = 8 × 120 = ₹960।",
+                expEn: "Selling Price (SP) = 800 × (1 + 20/100) = 800 × 1.2 = ₹960."
+            },
+            {
+                id: "P2_11",
+                part: "PART_2",
+                topic: "Elementary Mathematics",
+                qHi: "प्रथम 25 विषम प्राकृत संख्याओं (first 25 odd natural numbers) का योगफल क्या है?",
+                qEn: "What is the sum of the first 25 odd natural numbers (1 + 3 + 5 + ... up to 25 terms)?",
+                optionsHi: ["525", "625", "650", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["525", "625", "650", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "प्रथम n विषम प्राकृत संख्याओं का योगफल = n² होता है। अतः 25² = 625।",
+                expEn: "The sum of the first n odd natural numbers is given by n². Therefore, 25² = 625."
+            },
+            {
+                id: "P2_12",
+                part: "PART_2",
+                topic: "Mental Ability & Reasoning",
+                qHi: "दी गई संख्या श्रेणी में अगला पद क्या होगा? 2, 6, 12, 20, 30, ?",
+                qEn: "Find the next term in the number series: 2, 6, 12, 20, 30, ?",
+                optionsHi: ["40", "42", "44", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["40", "42", "44", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "अंतर क्रमशः +4, +6, +8, +10 है, अतः अगला अंतर +12 होगा: 30 + 12 = 42 (या n(n+1) पैटर्न: 6×7 = 42)।",
+                expEn: "The differences are +4, +6, +8, +10. Adding +12 to 30 gives 42 (follows n × (n+1) pattern)."
+            },
+            {
+                id: "P2_13",
+                part: "PART_2",
+                topic: "General Science - Biology",
+                qHi: "कोशिका का 'पावरहाउस' (ऊर्जा गृह) किसे कहा जाता है जहाँ ATP का निर्माण होता है?",
+                qEn: "Which cell organelle is known as the 'Powerhouse of the Cell' where ATP is synthesized?",
+                optionsHi: ["राइबोसोम", "माइटोकॉन्ड्रिया", "लाइसोसोम", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Ribosome", "Mitochondria", "Lysosome", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "माइटोकॉन्ड्रिया में कोशिकीय श्वसन द्वारा एडेनोसिन ट्राइफॉस्फेट (ATP) ऊर्जा अणुओं का निर्माण होता है।",
+                expEn: "Mitochondria generate most of the cell's supply of adenosine triphosphate (ATP), used as a source of chemical energy."
+            },
+            {
+                id: "P2_14",
+                part: "PART_2",
+                topic: "General Science - Physics",
+                qHi: "विद्युत धारा (Electric Current) को मापने के लिए किस यंत्र का उपयोग किया जाता है?",
+                qEn: "Which instrument is used to measure electric current in a circuit?",
+                optionsHi: ["वोल्टमीटर", "अमीटर", "गैल्वेनोमीटर", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Voltmeter", "Ammeter", "Potentiometer", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "परिपथ में विद्युत धारा (एम्पियर में) मापने के लिए अमीटर (Ammeter) को श्रेणीक्रम में जोड़ा जाता है।",
+                expEn: "An Ammeter is connected in series in a circuit to measure the magnitude of electric current in Amperes."
+            },
+            {
+                id: "P2_15",
+                part: "PART_2",
+                topic: "General Science - Chemistry",
+                qHi: "खाने का सोडा (Baking Soda) का रासायनिक नाम क्या है?",
+                qEn: "What is the chemical name of Baking Soda?",
+                optionsHi: ["सोडियम कार्बोनेट", "सोडियम हाइड्रोजन कार्बोनेट", "कैल्शियम ऑक्सीक्लोराइड", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Sodium Carbonate", "Sodium Hydrogen Carbonate", "Calcium Oxychloride", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "बेकिंग सोडा का रासायनिक सूत्र NaHCO3 (सोडियम बाइकार्बोनेट या सोडियम हाइड्रोजन कार्बोनेट) है।",
+                expEn: "Baking soda is chemically Sodium Bicarbonate (or Sodium Hydrogen Carbonate) with formula NaHCO3."
+            },
+            {
+                id: "P2_16",
+                part: "PART_2",
+                topic: "Bihar Congress Sessions",
+                qHi: "भारतीय राष्ट्रीय कांग्रेस का 1922 का ऐतिहासिक गया अधिवेशन किसकी अध्यक्षता में संपन्न हुआ था?",
+                qEn: "Who presided over the historic 1922 Gaya Session of the Indian National Congress in Bihar?",
+                optionsHi: ["आर. एन. मुधोलकर", "देशबंधु चितरंजन दास (C.R. Das)", "मौलाना अबुल कलाम आजाद", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["R.N. Mudholkar", "Deshbandhu Chittaranjan Das (C.R. Das)", "Maulana Abul Kalam Azad", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "1912 में बांकीपुर (पटना) अधिवेशन के अध्यक्ष आर.एन. मुधोलकर थे, जबकि 1922 के गया अधिवेशन के अध्यक्ष चितरंजन दास (C.R. Das) थे।",
+                expEn: "Chittaranjan Das (C.R. Das) presided over the 1922 Gaya Session of the INC, shortly after which the Swaraj Party was formed."
+            },
+
+            // ================= PART III: SOCIAL SCIENCE (HISTORY, POLITY, GEOGRAPHY) =================
+            {
+                id: "P3_SST_01",
+                part: "PART_3_SST",
+                topic: "Ancient Bihar & Magadha",
+                qHi: "तृतीय बौद्ध संगीति (Third Buddhist Council) का आयोजन कहाँ और किसके शासनकाल में हुआ था?",
+                qEn: "Where and under whose patronage was the Third Buddhist Council convened?",
+                optionsHi: ["राजगृह (अजातशत्रु)", "वैशाली (कालाशोक)", "पाटलिपुत्र (अशोक)", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Rajgriha (Ajatashatru)", "Vaishali (Kalashoka)", "Pataliputra (Ashoka)", OPT_D_EN, OPT_E_EN],
+                correct: 2,
+                expHi: "तृतीय बौद्ध संगीति लगभग 250 ई.पू. में सम्राट अशोक के शासनकाल में पाटलिपुत्र में मोग्गलिपुत्त तिस्स की अध्यक्षता में हुई थी।",
+                expEn: "The Third Buddhist Council was held at Pataliputra under the patronage of Emperor Ashoka and presided over by Moggaliputta Tissa."
+            },
+            {
+                id: "P3_SST_02",
+                part: "PART_3_SST",
+                topic: "Indian Polity - Fundamental Rights",
+                qHi: "डॉ. बी.आर. अंबेडकर ने भारतीय संविधान के किस अनुच्छेद को 'संविधान की आत्मा और हृदय' कहा था?",
+                qEn: "Which Article of the Indian Constitution was described by Dr. B.R. Ambedkar as the 'Heart and Soul of the Constitution'?",
+                optionsHi: ["अनुच्छेद 14", "अनुच्छेद 21", "अनुच्छेद 32", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Article 14", "Article 21", "Article 32", OPT_D_EN, OPT_E_EN],
+                correct: 2,
+                expHi: "अनुच्छेद 32 (संवैधानिक उपचारों का अधिकार) के तहत सर्वोच्च न्यायालय मौलिक अधिकारों के संरक्षण हेतु 5 प्रकार की रिट जारी करता है।",
+                expEn: "Article 32 guarantees the Right to Constitutional Remedies and empowers the Supreme Court to issue writs to enforce Fundamental Rights."
+            },
+            {
+                id: "P3_SST_03",
+                part: "PART_3_SST",
+                topic: "Indian Polity - Panchayati Raj",
+                qHi: "बिहार पंचायती राज अधिनियम, 2006 के तहत पंचायती राज संस्थाओं में महिलाओं के लिए कितने प्रतिशत आरक्षण का प्रावधान किया गया है?",
+                qEn: "Under the Bihar Panchayati Raj Act, 2006, what percentage of seats are reserved for women in Panchayati Raj Institutions in Bihar?",
+                optionsHi: ["33%", "50%", "35%", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["33%", "50%", "35%", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "बिहार वर्ष 2006 में पंचायती राज संस्थाओं में महिलाओं को 50% आरक्षण देने वाला भारत का पहला राज्य बना।",
+                expEn: "In 2006, Bihar became the first state in India to provide 50% reservation for women in three-tier Panchayati Raj Institutions."
+            },
+            {
+                id: "P3_SST_04",
+                part: "PART_3_SST",
+                topic: "Modern History - 1905 Partition",
+                qHi: "1905 में बंगाल विभाजन किस वायसराय के कार्यकाल में लागू किया गया था, जिसके विरोध में स्वदेशी आंदोलन शुरू हुआ?",
+                qEn: "Which British Viceroy executed the Partition of Bengal in 1905, triggering the Swadeshi Movement?",
+                optionsHi: ["लॉर्ड कर्जन", "लॉर्ड मिंटो", "लॉर्ड हार्डिंग", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Lord Curzon", "Lord Minto", "Lord Hardinge", OPT_D_EN, OPT_E_EN],
+                correct: 0,
+                expHi: "लॉर्ड कर्जन ने 1905 में बंगाल का विभाजन किया था, जिसे बाद में 1911 के दिल्ली दरबार में रद्द किया गया और 1912 में बिहार को अलग प्रांत बनाया गया।",
+                expEn: "Lord Curzon partitioned Bengal in 1905. Later at the 1911 Delhi Durbar, the partition was annulled and Bihar & Orissa were carved out in 1912."
+            },
+            {
+                id: "P3_SST_05",
+                part: "PART_3_SST",
+                topic: "Geography - Tropic of Cancer",
+                qHi: "कर्क रेखा (Tropic of Cancer - 23.5° N) भारत के निम्नलिखित में से किस राज्य से होकर गुजरती है?",
+                qEn: "Through which of the following Indian states does the Tropic of Cancer (23.5° N) pass?",
+                optionsHi: ["झारखंड", "छत्तीसगढ़", "पश्चिम बंगाल", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Jharkhand", "Chhattisgarh", "West Bengal", OPT_D_EN, OPT_E_EN],
+                correct: 3,
+                expHi: "कर्क रेखा भारत के 8 राज्यों (गुजरात, राजस्थान, म.प्र., छत्तीसगढ़, झारखंड, पश्चिम बंगाल, त्रिपुरा, मिजोरम) से गुजरती है। अतः A, B, C तीनों सही हैं, उत्तर (D) होगा।",
+                expEn: "The Tropic of Cancer passes through 8 Indian states including Jharkhand, Chhattisgarh, and West Bengal. Thus Option (D) 'More than one of the above' is correct."
+            },
+            {
+                id: "P3_SST_06",
+                part: "PART_3_SST",
+                topic: "Indian Constitution - 8th Schedule",
+                qHi: "बिहार की किस क्षेत्रीय भाषा को 92वें संविधान संशोधन अधिनियम (2003) द्वारा संविधान की आठवीं अनुसूची में शामिल किया गया है?",
+                qEn: "Which language widely spoken in Bihar was added to the 8th Schedule of the Indian Constitution via the 92nd Constitutional Amendment Act, 2003?",
+                optionsHi: ["भोजपुरी", "मगही", "मैथिली", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Bhojpuri", "Magahi", "Maithili", OPT_D_EN, OPT_E_EN],
+                correct: 2,
+                expHi: "92वें संविधान संशोधन द्वारा बोडो, डोगरी, मैथिली और संथाली को आठवीं अनुसूची में जोड़ा गया। मैथिली बिहार की एकमात्र क्षेत्रीय भाषा है जो 8वीं अनुसूची में शामिल है।",
+                expEn: "Maithili (along with Bodo, Dogri, and Santhali) was included in the 8th Schedule of the Constitution by the 92nd Amendment Act, 2003."
+            },
+
+            // ================= PART III: MATHEMATICS & SCIENCE =================
+            {
+                id: "P3_SCI_01",
+                part: "PART_3_SCI",
+                topic: "Physics - Optics & Lenses",
+                qHi: "निकट दृष्टि दोष (Myopia) को दूर करने के लिए चश्मे में किस लेंस का प्रयोग किया जाता है?",
+                qEn: "Which type of lens is prescribed to correct Myopia (short-sightedness) in the human eye?",
+                optionsHi: ["उत्तल लेंस (Convex Lens)", "अवतल लेंस (Concave Lens)", "बेलनाकार लेंस", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Convex Lens", "Concave Lens", "Planar Glass", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "निकट दृष्टि दोष (Myopia) में प्रतिबिंब रेटिना के आगे बनता है, जिसे अपसारी या अवतल लेंस (Concave Lens) द्वारा ठीक किया जाता है।",
+                expEn: "In Myopia, light focuses in front of the retina. A concave (diverging) lens diverges the light rays so they focus properly on the retina."
+            },
+            {
+                id: "P3_SCI_02",
+                part: "PART_3_SCI",
+                topic: "Chemistry - Acids, Bases & pH",
+                qHi: "शुद्ध जल और मानव रक्त के pH मान के संदर्भ में कौन-सा विकल्प सही है?",
+                qEn: "What is the approximate pH value of healthy human blood?",
+                optionsHi: ["5.5", "7.4", "9.8", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["5.5", "7.4", "9.8", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "मानव रक्त का pH मान लगभग 7.35 से 7.45 (अर्थात् 7.4, हल्का क्षारीय) होता है।",
+                expEn: "Human blood has a tightly regulated pH of around 7.4, making it slightly alkaline."
+            },
+            {
+                id: "P3_SCI_03",
+                part: "PART_3_SCI",
+                topic: "Mathematics - Mensuration",
+                qHi: "एक वृत्त की त्रिज्या में 10% की वृद्धि करने पर उसके क्षेत्रफल (Area) में कितने प्रतिशत की वृद्धि होगी?",
+                qEn: "If the radius of a circle is increased by 10%, by what percentage does its area increase?",
+                optionsHi: ["10%", "20%", "21%", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["10%", "20%", "21%", OPT_D_EN, OPT_E_EN],
+                correct: 2,
+                expHi: "प्रभावी प्रतिशत वृद्धि सूत्र = x + y + (xy/100) = 10 + 10 + (100/100) = 21%।",
+                expEn: "Using the successive percentage formula for Area (πr²): 10 + 10 + (10 × 10)/100 = 21%."
+            },
+            {
+                id: "P3_SCI_04",
+                part: "PART_3_SCI",
+                topic: "Mathematics - Trigonometry & Geometry",
+                qHi: "एक समकोण त्रिभुज की भुजाएँ 5 सेमी और 12 सेमी हैं। इसके कर्ण (Hypotenuse) की लंबाई क्या होगी?",
+                qEn: "The two perpendicular sides of a right-angled triangle are 5 cm and 12 cm. What is the length of its hypotenuse?",
+                optionsHi: ["13 सेमी", "15 सेमी", "17 सेमी", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["13 cm", "15 cm", "17 cm", OPT_D_EN, OPT_E_EN],
+                correct: 0,
+                expHi: "पाइथागोरस प्रमेय से: कर्ण = √(5² + 12²) = √(25 + 144) = √169 = 13 सेमी।",
+                expEn: "By Pythagoras Theorem: Hypotenuse = √(5² + 12²) = √(25 + 144) = √169 = 13 cm."
+            },
+            {
+                id: "P3_SCI_05",
+                part: "PART_3_SCI",
+                topic: "Biology - Plant Physiology",
+                qHi: "पौधों में जल एवं खनिज लवणों का जड़ों से पत्तियों तक संवहन किस ऊतक द्वारा होता है?",
+                qEn: "Which vascular tissue is responsible for transporting water and dissolved minerals from roots to leaves in plants?",
+                optionsHi: ["फ्लोएम (Phloem)", "जाइलम (Xylem)", "पैरेन्काइमा", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Phloem", "Xylem", "Parenchyma", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "जाइलम (Xylem) जल एवं खनिजों का परिवहन करता है, जबकि फ्लोएम (Phloem) पत्तियों में बने भोजन का संवहन करता है।",
+                expEn: "Xylem transports water and minerals upward from the roots, whereas Phloem translocates prepared food from the leaves."
+            },
+            {
+                id: "P3_SCI_06",
+                part: "PART_3_SCI",
+                topic: "Biology - Vitamins & Deficiency",
+                qHi: "निम्नलिखित में से कौन-सा विटामिन जल में घुलनशील (Water-soluble Vitamin) है?",
+                qEn: "Which of the following vitamins is water-soluble?",
+                optionsHi: ["विटामिन B कॉम्प्लेक्स", "विटामिन C (एस्कॉर्बिक अम्ल)", "विटामिन A और D", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Vitamin B Complex", "Vitamin C (Ascorbic Acid)", "Vitamin A and D", OPT_D_EN, OPT_E_EN],
+                correct: 3,
+                expHi: "विटामिन B और विटामिन C दोनों जल में घुलनशील हैं (जबकि A, D, E, K वसा में घुलनशील हैं)। अतः A और B दोनों सही होने से उत्तर (D) होगा।",
+                expEn: "Both Vitamin B Complex and Vitamin C are water-soluble vitamins (while A, D, E, K are fat-soluble). Hence Option (D) 'More than one of the above' is correct."
+            },
+
+            // ================= PART III: HINDI LITERATURE & GRAMMAR =================
+            {
+                id: "P3_HIN_01",
+                part: "PART_3_HINDI",
+                topic: "बिहार के साहित्यकार - रामधारी सिंह दिनकर",
+                qHi: "'राष्ट्रकवि' रामधारी सिंह दिनकर (सिमरिया, बेगूसराय) को उनकी किस कालजयी कृति के लिए 1972 में भारतीय ज्ञानपीठ पुरस्कार से सम्मानित किया गया था?",
+                qEn: "For which magnum opus did Rashtrakavi Ramdhari Singh 'Dinkar' (born in Simaria, Begusarai) receive the prestigious Jnanpith Award in 1972?",
+                optionsHi: ["रश्मिरथी", "उर्वशी", "कुरुक्षेत्र", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Rashmirathi", "Urvashi", "Kurukshetra", OPT_D_EN, OPT_E_EN],
+                correct: 1,
+                expHi: "रामधारी सिंह दिनकर को 'उर्वशी' के लिए 1972 में ज्ञानपीठ पुरस्कार और 'संस्कृति के चार अध्याय' के लिए साहित्य अकादमी पुरस्कार मिला था।",
+                expEn: "Ramdhari Singh Dinkar was awarded the Jnanpith Award in 1972 for his poetic drama 'Urvashi' and Sahitya Akademi Award for 'Sanskriti Ke Char Adhyay'."
+            },
+            {
+                id: "P3_HIN_02",
+                part: "PART_3_HINDI",
+                topic: "आंचलिक उपन्यास - फणीश्वर नाथ रेणु",
+                qHi: "हिन्दी का प्रथम आंचलिक उपन्यास 'मैला आँचल' (1954) के रचनाकार कौन हैं?",
+                qEn: "Who is the author of 'Maila Aanchal' (1954), celebrated as Hindi literature's milestone regional (Aanchalik) novel set in Purnia, Bihar?",
+                optionsHi: ["फणीश्वर नाथ 'रेणु'", "नागार्जुन", "रामवृक्ष बेनीपुरी", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Phanishwar Nath 'Renu'", "Baba Nagarjun", "Ramvriksh Benipuri", OPT_D_EN, OPT_E_EN],
+                correct: 0,
+                expHi: "बिहार के अररिया/पूर्णिया अंचल के कथाकार फणीश्वर नाथ 'रेणु' ने 1954 में 'मैला आँचल' की रचना की, जिसमें मेरीगंज गाँव का जीवंत चित्रण है।",
+                expEn: "Phanishwar Nath 'Renu' authored 'Maila Aanchal' (1954), vividly portraying life in the fictional village of Maryganj in Purnia district."
+            },
+            {
+                id: "P3_HIN_03",
+                part: "PART_3_HINDI",
+                topic: "भक्तिकाल एवं आदिकाल",
+                qHi: "'मैथिल कोकिल' के नाम से प्रसिद्ध कवि विद्यापति ने अपनी रचनाएँ किस भाषा में लिखी हैं?",
+                qEn: "In which of the following languages did the renowned poet Vidyapati ('Maithil Kokil') compose his works?",
+                optionsHi: ["मैथिली (पदावली)", "अवहट्ट (कीर्तिलता, कीर्तिपताका)", "संस्कृत", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Maithili (Padavali)", "Avahatta (Kirtilata, Kirtipataka)", "Sanskrit", OPT_D_EN, OPT_E_EN],
+                correct: 3,
+                expHi: "विद्यापति ने मैथिली में 'पदावली', अवहट्ट में 'कीर्तिलता' व 'कीर्तिपताका' तथा संस्कृत में कई ग्रंथों की रचना की। अतः उत्तर (D) 'उपर्युक्त में से एक से अधिक' है।",
+                expEn: "Vidyapati composed masterpieces in Maithili (Padavali), Avahatta (Kirtilata), and Sanskrit. Hence Option (D) 'More than one of the above' is correct."
+            },
+            {
+                id: "P3_HIN_04",
+                part: "PART_3_HINDI",
+                topic: "हिन्दी साहित्य - काल विभाजन",
+                qHi: "आचार्य रामचंद्र शुक्ल ने हिन्दी साहित्य के 'वीरगाथा काल' (आदिकाल) की समय-सीमा क्या मानी है?",
+                qEn: "What time period did Acharya Ramchandra Shukla assign to 'Veergatha Kal' (Adikal) in his History of Hindi Literature?",
+                optionsHi: ["संवत् 1050 से 1375 विक्रमी", "संवत् 1375 से 1700 विक्रमी", "संवत् 1700 से 1900 विक्रमी", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Samvat 1050 to 1375 Vikrami", "Samvat 1375 to 1700 Vikrami", "Samvat 1700 to 1900 Vikrami", OPT_D_EN, OPT_E_EN],
+                correct: 0,
+                expHi: "आचार्य रामचंद्र शुक्ल ने संवत् 1050 से 1375 विक्रमी तक के काल को 'वीरगाथा काल' नाम दिया है।",
+                expEn: "Acharya Ramchandra Shukla classified the period from Vikrami Samvat 1050 to 1375 as Veergatha Kal (Adikal)."
+            }
+        ];
+        // ===== Additional questions (added in revision) =====
+        (function () {
+            const D_HI = OPT_D_HI, E_HI = OPT_E_HI, D_EN = OPT_D_EN, E_EN = OPT_E_EN;
+            const mk = (id, part, topic, qHi, qEn, oHi, oEn, correct, expHi, expEn) => ({
+                id, part, topic, qHi, qEn,
+                optionsHi: [...oHi, D_HI, E_HI], optionsEn: [...oEn, D_EN, E_EN],
+                correct, expHi, expEn
+            });
+            DEFAULT_QUESTION_BANK.push(
+                // ---------- PART I ----------
+                mk("P1_09","PART_1","हिन्दी व्याकरण - विलोम","'आदि' का विलोम शब्द क्या है?","What is the antonym of 'Aadi' (आदि)?",
+                   ["अंत","अनादि","आरंभ"],["Ant","Anaadi","Aarambh"],0,"'आदि' का अर्थ प्रारंभ है, इसका विलोम 'अंत' है।","'Aadi' means beginning; its antonym is 'Ant' (end)."),
+                mk("P1_10","PART_1","हिन्दी व्याकरण - पर्यायवाची","'सूर्य' का पर्यायवाची कौन-सा है?","Which of the following is a synonym of 'Surya' (सूर्य)?",
+                   ["दिनकर","भास्कर","रवि"],["Dinkar","Bhaskar","Ravi"],3,"दिनकर, भास्कर और रवि तीनों सूर्य के पर्यायवाची हैं, अतः (D)।","Dinkar, Bhaskar and Ravi all mean the Sun, so (D)."),
+                mk("P1_11","PART_1","हिन्दी व्याकरण - संधि","'विद्यालय' में कौन-सी संधि है?","Which Sandhi is present in 'Vidyalaya' (विद्यालय)?",
+                   ["दीर्घ स्वर संधि","गुण स्वर संधि","यण स्वर संधि"],["Dirgha Swara Sandhi","Guna Swara Sandhi","Yan Swara Sandhi"],0,"विद्या + आलय: आ + आ = आ, अतः दीर्घ संधि।","Vidya + Aalaya: Aa + Aa = Aa, hence Dirgha Sandhi."),
+                mk("P1_12","PART_1","English - Antonyms","'ABUNDANT' का विलोम चुनें।","Choose the antonym of 'ABUNDANT'.",
+                   ["Plentiful","Scarce","Ample"],["Plentiful","Scarce","Ample"],1,"Abundant (प्रचुर) का विलोम Scarce (दुर्लभ) है।","The opposite of abundant is scarce."),
+                mk("P1_13","PART_1","English - Grammar","सही वाक्य चुनें।","Choose the grammatically correct sentence.",
+                   ["He don't like milk.","He doesn't likes milk.","He doesn't like milk."],["He don't like milk.","He doesn't likes milk.","He doesn't like milk."],2,"'does' के बाद क्रिया का मूल रूप (like) आता है।","After 'does', the base form of the verb (like) is used."),
+                mk("P1_14","PART_1","English - Spelling","सही वर्तनी वाला शब्द चुनें।","Choose the correctly spelled word.",
+                   ["Accommodate","Acommodate","Accomodate"],["Accommodate","Acommodate","Accomodate"],0,"सही वर्तनी 'Accommodate' है (दो c, दो m)।","The correct spelling is 'Accommodate' (double c, double m)."),
+                mk("P1_15","PART_1","English - One Word","'One who knows everything' के लिए एक शब्द?","One word for 'One who knows everything':",
+                   ["Omnipotent","Omniscient","Omnipresent"],["Omnipotent","Omniscient","Omnipresent"],1,"सर्वज्ञ = Omniscient।","Omniscient means all-knowing."),
+                // ---------- PART II ----------
+                mk("P2_17","PART_2","Bihar GK","बिहार दिवस प्रतिवर्ष कब मनाया जाता है?","When is Bihar Diwas celebrated every year?",
+                   ["22 मार्च","15 अगस्त","26 नवंबर"],["22 March","15 August","26 November"],0,"1912 में 22 मार्च को बिहार, बंगाल प्रेसीडेंसी से अलग हुआ था।","Bihar was carved out of the Bengal Presidency on 22 March 1912."),
+                mk("P2_18","PART_2","Bihar GK","'बिहार का शोक' किस नदी को कहा जाता है?","Which river is called the 'Sorrow of Bihar'?",
+                   ["गंडक","कोसी","सोन"],["Gandak","Kosi","Son"],1,"बार-बार मार्ग बदलने व बाढ़ के कारण कोसी को बिहार का शोक कहते हैं।","Kosi is called the Sorrow of Bihar due to frequent floods and shifting course."),
+                mk("P2_19","PART_2","Bihar History","मौर्य साम्राज्य की राजधानी कौन-सी थी?","What was the capital of the Maurya Empire?",
+                   ["वैशाली","पाटलिपुत्र","राजगृह"],["Vaishali","Pataliputra","Rajgriha"],1,"चंद्रगुप्त मौर्य ने पाटलिपुत्र (वर्तमान पटना) को राजधानी बनाया।","Chandragupta Maurya ruled from Pataliputra (modern Patna)."),
+                mk("P2_20","PART_2","Bihar History","भगवान महावीर का जन्म कहाँ हुआ था?","Where was Lord Mahavira born?",
+                   ["कुंडग्राम (वैशाली)","लुंबिनी","बोधगया"],["Kundagram (Vaishali)","Lumbini","Bodh Gaya"],0,"महावीर का जन्म वैशाली के निकट कुंडग्राम में हुआ।","Mahavira was born at Kundagram near Vaishali."),
+                mk("P2_21","PART_2","Bihar GK","महाबोधि मंदिर किस जिले में स्थित है?","In which district is the Mahabodhi Temple located?",
+                   ["नालंदा","गया","पटना"],["Nalanda","Gaya","Patna"],1,"बोधगया का महाबोधि मंदिर गया जिले में है (UNESCO धरोहर)।","The Mahabodhi Temple at Bodh Gaya is in Gaya district (UNESCO site)."),
+                mk("P2_22","PART_2","Indian Polity","भारत के प्रथम राष्ट्रपति कौन थे?","Who was the first President of India?",
+                   ["डॉ. राजेंद्र प्रसाद","डॉ. एस. राधाकृष्णन","जाकिर हुसैन"],["Dr. Rajendra Prasad","Dr. S. Radhakrishnan","Zakir Hussain"],0,"बिहार (सीवान, जीरादेई) के डॉ. राजेंद्र प्रसाद प्रथम राष्ट्रपति थे।","Dr. Rajendra Prasad, from Ziradei (Siwan), Bihar, was India's first President."),
+                mk("P2_23","PART_2","Mathematics","15 का 20% कितना है?","What is 20% of 15?",
+                   ["2","3","5"],["2","3","5"],1,"15 × 20/100 = 3","15 × 20/100 = 3"),
+                mk("P2_24","PART_2","Mathematics","12 और 18 का LCM क्या है?","What is the LCM of 12 and 18?",
+                   ["24","36","54"],["24","36","54"],1,"12 = 2²×3, 18 = 2×3² ⇒ LCM = 2²×3² = 36","12 = 2²×3, 18 = 2×3², so LCM = 36."),
+                mk("P2_25","PART_2","Mathematics","एक रेलगाड़ी 60 किमी/घंटा से 2.5 घंटे में कितनी दूरी तय करेगी?","How far does a train travel in 2.5 hours at 60 km/h?",
+                   ["120 किमी","150 किमी","180 किमी"],["120 km","150 km","180 km"],1,"दूरी = 60 × 2.5 = 150 किमी","Distance = 60 × 2.5 = 150 km."),
+                mk("P2_26","PART_2","Mathematics","निम्न में से कौन-सी अभाज्य (Prime) संख्याएँ हैं?","Which of the following are prime numbers?",
+                   ["29","31","37"],["29","31","37"],3,"29, 31 और 37 तीनों अभाज्य हैं, अतः (D)।","29, 31 and 37 are all prime, so (D)."),
+                mk("P2_27","PART_2","General Science","प्रकाश संश्लेषण में पौधे कौन-सी गैस ग्रहण करते हैं?","Which gas do plants absorb during photosynthesis?",
+                   ["ऑक्सीजन","कार्बन डाइऑक्साइड","नाइट्रोजन"],["Oxygen","Carbon dioxide","Nitrogen"],1,"पौधे CO₂ ग्रहण कर O₂ छोड़ते हैं।","Plants take in CO₂ and release O₂."),
+                mk("P2_28","PART_2","General Science","विटामिन C की कमी से कौन-सा रोग होता है?","Deficiency of Vitamin C causes which disease?",
+                   ["रिकेट्स","स्कर्वी","रतौंधी"],["Rickets","Scurvy","Night blindness"],1,"विटामिन C की कमी से स्कर्वी होता है।","Vitamin C deficiency causes scurvy."),
+                mk("P2_29","PART_2","General Science","ध्वनि किस माध्यम में नहीं चल सकती?","In which medium can sound NOT travel?",
+                   ["जल","वायु","लोहा"],["Water","Air","Iron"],4,"ध्वनि निर्वात में नहीं चलती; जल, वायु और लोहा तीनों में चलती है, अतः (E)।","Sound cannot travel in vacuum; it travels in water, air and iron, so (E)."),
+                // ---------- PART III ----------
+                mk("P3_SST_07","PART_3_SST","Geography","भारत की सबसे लंबी नदी कौन-सी है?","Which is the longest river in India?",
+                   ["यमुना","गंगा","गोदावरी"],["Yamuna","Ganga","Godavari"],1,"गंगा (लगभग 2525 किमी) भारत की सबसे लंबी नदी है।","The Ganga (about 2525 km) is India's longest river."),
+                mk("P3_SST_08","PART_3_SST","Indian Polity","भारतीय संविधान कब लागू हुआ?","When did the Constitution of India come into force?",
+                   ["15 अगस्त 1947","26 नवंबर 1949","26 जनवरी 1950"],["15 August 1947","26 November 1949","26 January 1950"],2,"संविधान 26 जनवरी 1950 को लागू हुआ।","The Constitution came into force on 26 January 1950."),
+                mk("P3_SST_09","PART_3_SST","Modern History","दांडी मार्च किस वर्ष हुआ?","In which year was the Dandi March?",
+                   ["1920","1930","1942"],["1920","1930","1942"],1,"नमक सत्याग्रह (दांडी मार्च) 1930 में हुआ।","The Salt Satyagraha (Dandi March) took place in 1930."),
+                mk("P3_SST_10","PART_3_SST","Economics","भारतीय रिज़र्व बैंक की स्थापना कब हुई?","When was the Reserve Bank of India established?",
+                   ["1935","1947","1949"],["1935","1947","1949"],0,"RBI की स्थापना 1 अप्रैल 1935 को हुई (राष्ट्रीयकरण 1949)।","RBI was established on 1 April 1935 (nationalised in 1949)."),
+                mk("P3_SCI_07","PART_3_SCI","Physics","बल का SI मात्रक क्या है?","What is the SI unit of force?",
+                   ["जूल","न्यूटन","वाट"],["Joule","Newton","Watt"],1,"बल का SI मात्रक न्यूटन है।","The SI unit of force is the newton."),
+                mk("P3_SCI_08","PART_3_SCI","Chemistry","जल का रासायनिक सूत्र क्या है?","What is the chemical formula of water?",
+                   ["H₂O₂","H₂O","HO₂"],["H₂O₂","H₂O","HO₂"],1,"जल = H₂O","Water is H₂O."),
+                mk("P3_SCI_09","PART_3_SCI","Mathematics","x² − 5x + 6 = 0 के मूल क्या हैं?","What are the roots of x² − 5x + 6 = 0?",
+                   ["2 और 3","−2 और −3","1 और 6"],["2 and 3","−2 and −3","1 and 6"],0,"(x−2)(x−3) = 0 ⇒ x = 2, 3","(x−2)(x−3) = 0, so x = 2, 3."),
+                mk("P3_SCI_10","PART_3_SCI","Mathematics","किसी त्रिभुज के तीनों आंतरिक कोणों का योग कितना होता है?","What is the sum of the interior angles of a triangle?",
+                   ["90°","180°","360°"],["90°","180°","360°"],1,"त्रिभुज के कोणों का योग 180° होता है।","The angles of a triangle add up to 180°."),
+                mk("P3_HIN_05","PART_3_HINDI","हिन्दी साहित्य","'गोदान' उपन्यास के लेखक कौन हैं?","Who wrote the novel 'Godan'?",
+                   ["प्रेमचंद","जयशंकर प्रसाद","यशपाल"],["Premchand","Jaishankar Prasad","Yashpal"],0,"'गोदान' (1936) मुंशी प्रेमचंद का उपन्यास है।","'Godan' (1936) is by Munshi Premchand."),
+                mk("P3_HIN_06","PART_3_HINDI","हिन्दी साहित्य","'कामायनी' किसकी रचना है?","'Kamayani' was written by whom?",
+                   ["सुमित्रानंदन पंत","जयशंकर प्रसाद","महादेवी वर्मा"],["Sumitranandan Pant","Jaishankar Prasad","Mahadevi Verma"],1,"'कामायनी' जयशंकर प्रसाद का महाकाव्य है।","'Kamayani' is an epic by Jaishankar Prasad."),
+                mk("P3_HIN_07","PART_3_HINDI","हिन्दी साहित्य","'रामचरितमानस' किस भाषा में रचित है?","In which language is 'Ramcharitmanas' composed?",
+                   ["ब्रज","अवधी","खड़ी बोली"],["Braj","Awadhi","Khari Boli"],1,"तुलसीदास ने रामचरितमानस अवधी में लिखा।","Tulsidas wrote Ramcharitmanas in Awadhi.")
+            );
+        })();
+
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        let appState = {
+            langMode: 'BOTH',        // 'BOTH', 'HI', 'EN'
+            category: 'PRT',         // 'PRT', 'MIDDLE', 'TGTPGT'
+            negativeMarking: false,  // false = 0, true = -1/3 (0.3333)
+            practiceMode: 'INSTANT', // 'INSTANT' or 'EXAM'
+            rightPanelTab: 'OMR',    // 'OMR' or 'PALETTE'
+            activeQuestions: [],
+            currentIndex: 0,
+            userResponses: {},       // { index: selectedOptionIndex (0..4) }
+            markedReview: {},        // { index: boolean }
+            visited: {},             // { index: boolean }
+            timerSeconds: 0,
+            totalAllottedSeconds: 0,
+            timerInterval: null,
+            lastResultFilter: 'ALL'
+        };
+
+        // Load full question pool (Built-in + LocalStorage Custom Questions)
+        function getAllQuestions() {
+            let custom = [];
+            try {
+                const raw = localStorage.getItem('bpsc_tre4_custom_questions');
+                if (raw) custom = JSON.parse(raw);
+            } catch (e) {
+                custom = [];
+            }
+            return [...DEFAULT_QUESTION_BANK, ...custom];
+        }
+
+        // Initialize UI on window load
+        window.onload = function () {
+            refreshCustomQuestionsList();
+            updateQuestionCountPreview();
+        };
+
+        // ==========================================
+        // NAVIGATION & LANGUAGE TOGGLE
+        // ==========================================
+        function setLanguageMode(mode) {
+            appState.langMode = mode;
+            ['BOTH', 'HI', 'EN'].forEach(m => {
+                const btn = document.getElementById(`lang-btn-${m}`);
+                if (m === mode) {
+                    btn.className = "px-2.5 py-1.5 rounded-md bg-amber-500 text-slate-950 transition font-bold";
+                } else {
+                    btn.className = "px-2.5 py-1.5 rounded-md text-slate-300 hover:text-white transition";
+                }
+            });
+
+            // Re-render active exam question or solution list if visible
+            if (!document.getElementById('view-exam').classList.contains('hidden')) {
+                renderActiveQuestion();
+            }
+            if (!document.getElementById('view-result').classList.contains('hidden')) {
+                renderSolutionsList(appState.lastResultFilter);
+            }
+            showToast(`Language mode switched to ${mode === 'BOTH' ? 'Bilingual (हिन्दी + English)' : mode === 'HI' ? 'हिन्दी' : 'English'}`);
+        }
+
+        function switchMainTab(tabName) {
+            const views = ['dashboard', 'exam', 'result', 'syllabus', 'builder'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            const target = document.getElementById(`view-${tabName}`);
+            if (target) target.classList.remove('hidden');
+
+            // Highlight nav buttons
+            ['dashboard', 'syllabus', 'builder'].forEach(nav => {
+                const btn = document.getElementById(`nav-${nav}`);
+                if (!btn) return;
+                if (nav === tabName) {
+                    btn.className = "px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white/15 text-amber-300 hover:bg-white/20 transition flex items-center gap-1.5";
+                } else {
+                    btn.className = "px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:bg-white/10 transition flex items-center gap-1.5";
+                }
+            });
+
+            if (tabName === 'dashboard') {
+                updateQuestionCountPreview();
+            }
+        }
+
+        // ==========================================
+        // DASHBOARD CONFIGURATION CONTROLS
+        // ==========================================
+        function selectCategory(cat) {
+            appState.category = cat;
+            const cats = ['PRT', 'MIDDLE', 'TGTPGT'];
+            cats.forEach(c => {
+                const card = document.getElementById(`cat-card-${c}`);
+                const icon = document.getElementById(`cat-icon-${c}`);
+                if (c === cat) {
+                    card.className = "cursor-pointer rounded-xl p-4 border-2 border-indigo-600 bg-indigo-50/60 transition hover:shadow-md";
+                    icon.className = "fa-solid fa-circle-check text-indigo-600";
+                } else {
+                    card.className = "cursor-pointer rounded-xl p-4 border-2 border-slate-200 bg-white transition hover:border-slate-300 hover:shadow-md";
+                    icon.className = "fa-regular fa-circle text-slate-400";
+                }
+            });
+
+            const labels = {
+                'PRT': 'Primary Teacher (PRT Class 1–5)',
+                'MIDDLE': 'Middle School Teacher (Class 6–8)',
+                'TGTPGT': 'Secondary / PGT Teacher (Class 9–12)'
+            };
+            document.getElementById('summary-cat-label').textContent = labels[cat];
+            updateQuestionCountPreview();
+        }
+
+        function setNegativeMode(isStrict) {
+            appState.negativeMarking = isStrict;
+            const btnOff = document.getElementById('neg-btn-off');
+            const btnOn = document.getElementById('neg-btn-on');
+            const badge = document.getElementById('neg-badge');
+            const summaryMark = document.getElementById('summary-marking');
+
+            if (isStrict) {
+                btnOn.className = "py-2 px-3 rounded-lg text-xs font-bold bg-rose-700 text-white shadow-sm transition";
+                btnOff.className = "py-2 px-3 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition";
+                badge.textContent = "-1/3 Penalty";
+                badge.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800";
+                summaryMark.textContent = "+1.00 / -0.33 (Strict)";
+                summaryMark.className = "font-bold text-rose-600";
+            } else {
+                btnOff.className = "py-2 px-3 rounded-lg text-xs font-bold bg-indigo-900 text-white shadow-sm transition";
+                btnOn.className = "py-2 px-3 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition";
+                badge.textContent = "No Negative (0)";
+                badge.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
+                summaryMark.textContent = "+1.00 / -0.00";
+                summaryMark.className = "font-bold text-indigo-700";
+            }
+        }
+
+        function setPracticeMode(mode) {
+            appState.practiceMode = mode;
+            const btnInstant = document.getElementById('mode-btn-instant');
+            const btnExam = document.getElementById('mode-btn-exam');
+            const badge = document.getElementById('mode-badge');
+
+            if (mode === 'INSTANT') {
+                btnInstant.className = "py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 shadow-sm transition";
+                btnExam.className = "py-2 px-3 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition";
+                badge.textContent = "Instant Learn";
+            } else {
+                btnExam.className = "py-2 px-3 rounded-lg text-xs font-bold bg-indigo-900 text-white shadow-sm transition";
+                btnInstant.className = "py-2 px-3 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition";
+                badge.textContent = "Exam Simulation";
+            }
+        }
+
+        function buildFilteredQuestionSet() {
+            const allQ = getAllQuestions();
+            document.getElementById('stat-total-questions').textContent = allQ.length;
+
+            const sectionVal = document.getElementById('config-section').value;
+            const streamVal = document.getElementById('config-stream').value;
+
+            let filtered = [];
+            if (sectionVal === 'PART_1') {
+                filtered = allQ.filter(q => q.part === 'PART_1');
+            } else if (sectionVal === 'PART_2') {
+                filtered = allQ.filter(q => q.part === 'PART_2');
+            } else if (sectionVal === 'PART_3_SST') {
+                filtered = allQ.filter(q => q.part === 'PART_3_SST');
+            } else if (sectionVal === 'PART_3_SCI') {
+                filtered = allQ.filter(q => q.part === 'PART_3_SCI');
+            } else if (sectionVal === 'PART_3_HINDI') {
+                filtered = allQ.filter(q => q.part === 'PART_3_HINDI');
+            } else if (sectionVal === 'QUICK_15') {
+                filtered = [...allQ].slice(0, 15);
+            } else {
+                // FULL_MOCK based on Category & Stream
+                if (appState.category === 'PRT') {
+                    // PRT focuses on Part I + Part II (and general environment/science/SST basics)
+                    filtered = allQ.filter(q => q.part === 'PART_1' || q.part === 'PART_2' || q.part === 'PART_3_SST');
+                } else {
+                    if (streamVal === 'SST') {
+                        filtered = allQ.filter(q => q.part === 'PART_1' || q.part === 'PART_2' || q.part === 'PART_3_SST');
+                    } else if (streamVal === 'MATH_SCI') {
+                        filtered = allQ.filter(q => q.part === 'PART_1' || q.part === 'PART_2' || q.part === 'PART_3_SCI');
+                    } else if (streamVal === 'HINDI') {
+                        filtered = allQ.filter(q => q.part === 'PART_1' || q.part === 'PART_2' || q.part === 'PART_3_HINDI');
+                    } else {
+                        filtered = [...allQ];
+                    }
+                }
+            }
+            return filtered;
+        }
+
+        function updateQuestionCountPreview() {
+            const set = buildFilteredQuestionSet();
+            document.getElementById('summary-q-count').textContent = `${set.length} Questions`;
+            const mins = Math.max(10, Math.ceil(set.length * 1.2));
+            document.getElementById('summary-duration').textContent = `${mins} Minutes`;
+        }
+
+        function quickStartSection(sectionCode) {
+            document.getElementById('config-section').value = sectionCode;
+            updateQuestionCountPreview();
+            startExamSession();
+        }
+
+        // ==========================================
+        // EXAM ENGINE & REALISTIC OMR SHEET
+        // ==========================================
+        function startExamSession() {
+            const selectedQs = buildFilteredQuestionSet();
+            if (selectedQs.length === 0) {
+                showToast("No questions match this filter.", "error");
+                return;
+            }
+
+            appState.activeQuestions = selectedQs;
+            appState.currentIndex = 0;
+            appState.userResponses = {};
+            appState.markedReview = {};
+            appState.visited = { 0: true };
+
+            const mins = Math.max(10, Math.ceil(selectedQs.length * 1.2));
+            appState.totalAllottedSeconds = mins * 60;
+            appState.timerSeconds = appState.totalAllottedSeconds;
+
+            // Update Exam Header
+            document.getElementById('exam-header-cat').textContent = appState.category === 'PRT' ? 'PRT (1-5)' : appState.category === 'MIDDLE' ? 'Middle (6-8)' : 'TGT/PGT (9-12)';
+            const negHeader = document.getElementById('exam-header-neg');
+            const negQBadge = document.getElementById('q-neg-label');
+            if (appState.negativeMarking) {
+                negHeader.textContent = '-1/3 Neg';
+                negHeader.className = 'text-xs font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800';
+                negQBadge.textContent = '-0.33 Mark';
+            } else {
+                negHeader.textContent = '0 Neg';
+                negHeader.className = 'text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800';
+                negQBadge.textContent = '-0.0 Mark';
+            }
+
+            switchMainTab('exam');
+            renderActiveQuestion();
+            renderOMRAndPalette();
+            startExamTimer();
+        }
+
+        function startExamTimer() {
+            if (appState.timerInterval) clearInterval(appState.timerInterval);
+            updateTimerDisplay();
+            appState.timerInterval = setInterval(() => {
+                appState.timerSeconds--;
+                updateTimerDisplay();
+                if (appState.timerSeconds <= 0) {
+                    clearInterval(appState.timerInterval);
+                    showToast("Time is up! Submitting your BPSC OMR Sheet automatically.");
+                    finalizeAndGradeExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(appState.timerSeconds / 60);
+            const s = appState.timerSeconds % 60;
+            document.getElementById('exam-timer').textContent =
+                `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function getPartLabel(partCode) {
+            const map = {
+                'PART_1': 'Part I: Qualifying Language',
+                'PART_2': 'Part II: General Studies & Bihar GK',
+                'PART_3_SST': 'Part III: Social Science',
+                'PART_3_SCI': 'Part III: Math & Science',
+                'PART_3_HINDI': 'Part III: Hindi Literature'
+            };
+            return map[partCode] || partCode;
+        }
+
+        function renderActiveQuestion() {
+            const q = appState.activeQuestions[appState.currentIndex];
+            if (!q) return;
+
+            appState.visited[appState.currentIndex] = true;
+
+            // Badges
+            document.getElementById('q-number-badge').textContent = `Question ${appState.currentIndex + 1} of ${appState.activeQuestions.length}`;
+            document.getElementById('q-part-badge').textContent = `${getPartLabel(q.part)} • ${q.topic}`;
+
+            // Prompt Text (Bilingual / Hindi / English)
+            const qTextContainer = document.getElementById('q-text-container');
+            let promptHtml = '';
+            if (appState.langMode === 'BOTH') {
+                promptHtml = `
+                    <div class="text-base sm:text-lg font-bold text-slate-900 leading-relaxed">${q.qHi}</div>
+                    <div class="text-sm sm:text-base font-medium text-slate-600 leading-relaxed border-l-4 border-amber-400 pl-3">${q.qEn}</div>
+                `;
+            } else if (appState.langMode === 'HI') {
+                promptHtml = `<div class="text-lg font-bold text-slate-900 leading-relaxed">${q.qHi}</div>`;
+            } else {
+                promptHtml = `<div class="text-lg font-bold text-slate-900 leading-relaxed">${q.qEn}</div>`;
+            }
+            qTextContainer.innerHTML = promptHtml;
+
+            // Options (A, B, C, D, E)
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+            const selectedOpt = appState.userResponses[appState.currentIndex];
+            const optionsContainer = document.getElementById('q-options-container');
+            let optsHtml = '';
+
+            for (let i = 0; i < 5; i++) {
+                const isSelected = selectedOpt === i;
+                const isDE = (i === 3 || i === 4);
+
+                let optLabel = '';
+                if (appState.langMode === 'BOTH') {
+                    optLabel = `<span class="font-bold text-slate-900">${q.optionsHi[i]}</span> <span class="text-slate-500 text-xs sm:text-sm ml-1">/ ${q.optionsEn[i]}</span>`;
+                } else if (appState.langMode === 'HI') {
+                    optLabel = `<span class="font-bold text-slate-900">${q.optionsHi[i]}</span>`;
+                } else {
+                    optLabel = `<span class="font-bold text-slate-900">${q.optionsEn[i]}</span>`;
+                }
+
+                let cardStyle = isSelected
+                    ? "border-2 border-indigo-700 bg-indigo-50/90 shadow-sm"
+                    : isDE
+                        ? "border border-pink-200 bg-pink-50/30 hover:bg-pink-50/70"
+                        : "border border-slate-200 bg-white hover:bg-slate-50";
+
+                // If in Instant Learn Mode and user already answered, highlight right/wrong
+                if (appState.practiceMode === 'INSTANT' && selectedOpt !== undefined) {
+                    if (i === q.correct) {
+                        cardStyle = "border-2 border-emerald-600 bg-emerald-50/90";
+                    } else if (isSelected && i !== q.correct) {
+                        cardStyle = "border-2 border-rose-600 bg-rose-50/90";
+                    }
+                }
+
+                optsHtml += `
+                    <div onclick="selectOption(${i})" class="cursor-pointer rounded-xl p-3.5 transition flex items-center justify-between gap-3 ${cardStyle}">
+                        <div class="flex items-center gap-3.5">
+                            <span class="omr-bubble ${isSelected ? 'filled' : ''}">${letters[i]}</span>
+                            <div class="text-sm sm:text-base">${optLabel}</div>
+                        </div>
+                        ${isDE ? `<span class="hidden sm:inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-pink-100 text-pink-800 shrink-0">BPSC OMR</span>` : ''}
+                    </div>
+                `;
+            }
+            optionsContainer.innerHTML = optsHtml;
+
+            // Instant Explanation Display
+            const expBox = document.getElementById('instant-explanation-box');
+            if (appState.practiceMode === 'INSTANT' && selectedOpt !== undefined) {
+                const isCorrect = selectedOpt === q.correct;
+                expBox.classList.remove('hidden');
+                expBox.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase px-2.5 py-1 rounded ${isCorrect ? 'bg-emerald-200 text-emerald-900' : 'bg-rose-200 text-rose-900'}">
+                            ${isCorrect ? '<i class="fa-solid fa-check mr-1"></i> Correct OMR Bubble!' : `<i class="fa-solid fa-xmark mr-1"></i> Incorrect — Correct Option is (${letters[q.correct]})`}
+                        </span>
+                        <span class="text-xs font-bold text-indigo-900">Instant Learn Mode</span>
+                    </div>
+                    <div class="text-xs sm:text-sm text-slate-800 font-medium pt-1 leading-relaxed">
+                        <strong>हिन्दी व्याख्या:</strong> ${q.expHi}
+                    </div>
+                    <div class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        <strong>Explanation:</strong> ${q.expEn}
+                    </div>
+                `;
+            } else {
+                expBox.classList.add('hidden');
+            }
+
+            // Review Button State
+            const revBtn = document.getElementById('btn-mark-review');
+            if (appState.markedReview[appState.currentIndex]) {
+                revBtn.className = "px-3.5 py-2 rounded-xl border-2 border-amber-600 bg-amber-400 text-slate-950 text-xs font-extrabold transition flex items-center gap-1.5";
+            } else {
+                revBtn.className = "px-3.5 py-2 rounded-xl border border-amber-400 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold transition flex items-center gap-1.5";
+            }
+        }
+
+        function selectOption(optIndex) {
+            appState.userResponses[appState.currentIndex] = optIndex;
+            renderActiveQuestion();
+            renderOMRAndPalette();
+        }
+
+        function bubbleDirectlyFromOMR(qIdx, optIdx) {
+            appState.currentIndex = qIdx;
+            appState.visited[qIdx] = true;
+            appState.userResponses[qIdx] = optIdx;
+            renderActiveQuestion();
+            renderOMRAndPalette();
+        }
+
+        function clearCurrentResponse() {
+            delete appState.userResponses[appState.currentIndex];
+            renderActiveQuestion();
+            renderOMRAndPalette();
+        }
+
+        function markCurrentForReview() {
+            appState.markedReview[appState.currentIndex] = !appState.markedReview[appState.currentIndex];
+            renderActiveQuestion();
+            renderOMRAndPalette();
+        }
+
+        function navigateQuestion(delta) {
+            const nextIdx = appState.currentIndex + delta;
+            if (nextIdx >= 0 && nextIdx < appState.activeQuestions.length) {
+                appState.currentIndex = nextIdx;
+                renderActiveQuestion();
+                renderOMRAndPalette();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            appState.currentIndex = idx;
+            renderActiveQuestion();
+            renderOMRAndPalette();
+        }
+
+        function setRightPanelTab(tab) {
+            appState.rightPanelTab = tab;
+            const tabOmr = document.getElementById('tab-right-omr');
+            const tabPal = document.getElementById('tab-right-palette');
+            const viewOmr = document.getElementById('right-panel-omr');
+            const viewPal = document.getElementById('right-panel-palette');
+
+            if (tab === 'OMR') {
+                tabOmr.className = "py-3 px-3 bg-pink-50 text-pink-800 border-b-2 border-pink-600 flex items-center justify-center gap-1.5";
+                tabPal.className = "py-3 px-3 text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-1.5";
+                viewOmr.classList.remove('hidden');
+                viewPal.classList.add('hidden');
+            } else {
+                tabPal.className = "py-3 px-3 bg-indigo-50 text-indigo-900 border-b-2 border-indigo-600 flex items-center justify-center gap-1.5";
+                tabOmr.className = "py-3 px-3 text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-1.5";
+                viewPal.classList.remove('hidden');
+                viewOmr.classList.add('hidden');
+            }
+        }
+
+        function toggleRightPanelMode() {
+            setRightPanelTab(appState.rightPanelTab === 'OMR' ? 'PALETTE' : 'OMR');
+        }
+
+        function renderOMRAndPalette() {
+            const total = appState.activeQuestions.length;
+            let answeredCount = 0;
+            let reviewCount = 0;
+            let unvisitedCount = 0;
+
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+            let omrHtml = '';
+            let paletteHtml = '';
+
+            for (let i = 0; i < total; i++) {
+                const resp = appState.userResponses[i];
+                const isRev = appState.markedReview[i];
+                const isVis = appState.visited[i];
+                const isCurrent = (i === appState.currentIndex);
+
+                if (resp !== undefined) answeredCount++;
+                if (isRev) reviewCount++;
+                if (!isVis) unvisitedCount++;
+
+                // 1. Build Realistic Pink OMR Row
+                let bubblesRow = '';
+                for (let b = 0; b < 5; b++) {
+                    const filled = (resp === b) ? 'filled' : '';
+                    bubblesRow += `
+                        <span onclick="bubbleDirectlyFromOMR(${i}, ${b})" class="omr-bubble !w-7 !h-7 !text-xs ${filled}" title="Q${i+1} Option ${letters[b]}">
+                            ${letters[b]}
+                        </span>
+                    `;
+                }
+
+                omrHtml += `
+                    <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg transition ${isCurrent ? 'bg-pink-200/70 ring-1 ring-pink-500' : 'hover:bg-pink-100/50'}">
+                        <button onclick="jumpToQuestion(${i})" class="text-xs font-extrabold ${resp === undefined ? 'text-rose-700' : 'text-slate-900'} flex items-center gap-1">
+                            <span>${String(i + 1).padStart(2, '0')}.</span>
+                            ${isRev ? '<i class="fa-solid fa-bookmark text-amber-600 text-[10px]"></i>' : ''}
+                        </button>
+                        <div class="flex items-center gap-1.5">
+                            ${bubblesRow}
+                        </div>
+                    </div>
+                `;
+
+                // 2. Build Question Palette Button
+                let btnColor = "bg-slate-100 text-slate-700 border-slate-300";
+                if (isRev) {
+                    btnColor = "bg-amber-400 text-slate-950 border-amber-600";
+                } else if (resp !== undefined) {
+                    btnColor = "bg-emerald-600 text-white border-emerald-700";
+                } else if (isVis) {
+                    btnColor = "bg-rose-100 text-rose-800 border-rose-300";
+                }
+
+                paletteHtml += `
+                    <button onclick="jumpToQuestion(${i})" class="h-10 rounded-xl font-extrabold text-xs border ${btnColor} ${isCurrent ? 'ring-2 ring-indigo-900 ring-offset-1' : ''} transition">
+                        ${i + 1}
+                    </button>
+                `;
+            }
+
+            const blankCount = total - answeredCount;
+            document.getElementById('count-answered').textContent = answeredCount;
+            document.getElementById('count-blank').textContent = blankCount;
+            document.getElementById('count-review').textContent = reviewCount;
+            document.getElementById('count-unvisited').textContent = unvisitedCount;
+            document.getElementById('omr-blank-warning').textContent = blankCount > 0 ? `${blankCount} Blank!` : 'All Bubbled!';
+
+            document.getElementById('omr-rows-container').innerHTML = omrHtml;
+            document.getElementById('palette-grid-container').innerHTML = paletteHtml;
+        }
+
+        // ==========================================
+        // SUBMIT & SCORECARD ANALYTICS
+        // ==========================================
+        function openSubmitConfirmationModal() {
+            const total = appState.activeQuestions.length;
+            const answered = Object.keys(appState.userResponses).length;
+            const blank = total - answered;
+            const review = Object.values(appState.markedReview).filter(Boolean).length;
+
+            document.getElementById('modal-ans-count').textContent = answered;
+            document.getElementById('modal-blank-count').textContent = blank;
+            document.getElementById('modal-rev-count').textContent = review;
+
+            const alertEl = document.getElementById('modal-omr-alert');
+            if (blank > 0) {
+                alertEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-pink-600 mr-1"></i> <strong>Attention Candidate:</strong> You have left <strong>${blank} OMR row(s) blank</strong>. In BPSC 5-option OMR exams, verify if you intended to bubble <strong>(E) None of the above</strong>!`;
+            } else {
+                alertEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> <strong>100% OMR Completed:</strong> Every question has a darkened bubble (A–E). Ready for final evaluation!`;
+            }
+
+            const modal = document.getElementById('modal-submit');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeSubmitConfirmationModal() {
+            const modal = document.getElementById('modal-submit');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmExitExam() {
+            const modal = document.getElementById('modal-exit');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeExitModal() {
+            const modal = document.getElementById('modal-exit');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function forceExitToDashboard() {
+            if (appState.timerInterval) clearInterval(appState.timerInterval);
+            closeExitModal();
+            switchMainTab('dashboard');
+        }
+
+        function finalizeAndGradeExam() {
+            closeSubmitConfirmationModal();
+            if (appState.timerInterval) clearInterval(appState.timerInterval);
+
+            const qs = appState.activeQuestions;
+            const negPenalty = appState.negativeMarking ? (1 / 3) : 0;
+
+            let totalCorrect = 0;
+            let totalWrong = 0;
+            let totalSkipped = 0;
+            let totalPenaltyDeducted = 0;
+
+            // Part I vs Merit (Part II + III) Counters
+            let p1Total = 0, p1Score = 0;
+            let meritTotal = 0, meritScore = 0;
+
+            // Section-wise tracker
+            const secStats = {};
+            // Option D/E trap tracker
+            let deTotalQuestions = 0;
+            let deCorrectHits = 0;
+
+            qs.forEach((q, idx) => {
+                const userOpt = appState.userResponses[idx];
+                const isPart1 = (q.part === 'PART_1');
+
+                if (!secStats[q.part]) {
+                    secStats[q.part] = { total: 0, correct: 0, wrong: 0, score: 0 };
+                }
+                secStats[q.part].total++;
+
+                if (q.correct === 3 || q.correct === 4) {
+                    deTotalQuestions++;
+                    if (userOpt === q.correct) deCorrectHits++;
+                }
+
+                if (isPart1) p1Total++;
+                else meritTotal++;
+
+                if (userOpt === undefined) {
+                    totalSkipped++;
+                } else if (userOpt === q.correct) {
+                    totalCorrect++;
+                    secStats[q.part].correct++;
+                    secStats[q.part].score += 1;
+                    if (isPart1) p1Score += 1;
+                    else meritScore += 1;
+                } else {
+                    totalWrong++;
+                    secStats[q.part].wrong++;
+                    // In BPSC, Part I Language never has negative marking; apply negative to merit or overall if enabled
+                    const deduct = negPenalty;
+                    totalPenaltyDeducted += deduct;
+                    secStats[q.part].score -= deduct;
+                    if (isPart1) p1Score -= deduct;
+                    else meritScore -= deduct;
+                }
+            });
+
+            const overallScore = totalCorrect - totalPenaltyDeducted;
+            const attempted = totalCorrect + totalWrong;
+            const accuracy = attempted > 0 ? Math.round((totalCorrect / attempted) * 100) : 0;
+            const elapsedSec = Math.max(1, appState.totalAllottedSeconds - appState.timerSeconds);
+
+            // Populate Top Scorecard
+            document.getElementById('res-merit-score').textContent = meritTotal > 0 ? `${meritScore.toFixed(2)} / ${meritTotal}` : `${overallScore.toFixed(2)} / ${qs.length}`;
+            document.getElementById('res-total-score').textContent = overallScore.toFixed(2);
+            document.getElementById('res-total-max').textContent = `Out of ${qs.length} Marks`;
+
+            // Part I Qualifying Check (30%)
+            const p1StatusEl = document.getElementById('res-part1-status');
+            const p1MarksEl = document.getElementById('res-part1-marks');
+            if (p1Total > 0) {
+                const p1Pct = (p1Score / p1Total) * 100;
+                const qualified = p1Pct >= 30;
+                p1StatusEl.textContent = qualified ? "QUALIFIED" : "NOT QUALIFIED";
+                p1StatusEl.className = `text-lg font-black mt-1 ${qualified ? 'text-emerald-400' : 'text-rose-400'}`;
+                p1MarksEl.textContent = `${p1Score.toFixed(1)}/${p1Total} (${Math.round(p1Pct)}% • Min 30%)`;
+            } else {
+                p1StatusEl.textContent = "N/A (Merit Only)";
+                p1StatusEl.className = "text-lg font-black mt-1 text-amber-300";
+                p1MarksEl.textContent = "Sectional Practice";
+            }
+
+            document.getElementById('res-correct-wrong').textContent = `${totalCorrect} / ${totalWrong}`;
+            document.getElementById('res-skipped-count').textContent = `${totalSkipped} Blank OMR`;
+            document.getElementById('res-neg-deducted').textContent = `-${totalPenaltyDeducted.toFixed(2)}`;
+            document.getElementById('res-neg-rule-text').textContent = appState.negativeMarking ? "Strict -1/3 Applied" : "0 Negative Mode";
+            document.getElementById('res-accuracy').textContent = `${accuracy}%`;
+            document.getElementById('res-time-taken').textContent = `Time: ${Math.floor(elapsedSec / 60)}m ${elapsedSec % 60}s`;
+
+            // Render Section Breakdown Bars
+            const barsContainer = document.getElementById('section-breakdown-bars');
+            let barsHtml = '';
+            Object.keys(secStats).forEach(partKey => {
+                const st = secStats[partKey];
+                const pct = Math.max(0, Math.round((st.correct / st.total) * 100));
+                barsHtml += `
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs font-bold">
+                            <span class="text-slate-800">${getPartLabel(partKey)}</span>
+                            <span class="text-indigo-700">${st.correct}/${st.total} Correct (${pct}%)</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-indigo-600 to-amber-500 rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            barsContainer.innerHTML = barsHtml;
+
+            // Render Option D & E Trap Analysis
+            document.getElementById('de-trap-stats').innerHTML = `
+                <div class="p-3 rounded-xl bg-pink-50 border border-pink-200 flex justify-between items-center">
+                    <span class="font-semibold text-pink-950">Questions where (D) or (E) was Correct:</span>
+                    <span class="font-black text-pink-700 text-sm">${deTotalQuestions} Qs</span>
+                </div>
+                <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex justify-between items-center">
+                    <span class="font-semibold text-emerald-950">Successfully Cracked (D)/(E) Questions:</span>
+                    <span class="font-black text-emerald-700 text-sm">${deCorrectHits} / ${deTotalQuestions}</span>
+                </div>
+            `;
+
+            switchMainTab('result');
+            filterSolutions('ALL');
+        }
+
+        function filterSolutions(filterType) {
+            appState.lastResultFilter = filterType;
+            ['ALL', 'CORRECT', 'WRONG', 'SKIPPED'].forEach(f => {
+                const btn = document.getElementById(`sol-filter-${f}`);
+                if (f === filterType) {
+                    btn.className = "px-3 py-1.5 rounded-lg bg-slate-900 text-white font-bold";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold";
+                }
+            });
+            renderSolutionsList(filterType);
+        }
+
+        function renderSolutionsList(filterType) {
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+            const container = document.getElementById('solutions-list-container');
+            let html = '';
+
+            appState.activeQuestions.forEach((q, idx) => {
+                const userOpt = appState.userResponses[idx];
+                const isSkipped = (userOpt === undefined);
+                const isCorrect = (userOpt === q.correct);
+                const isWrong = (!isSkipped && !isCorrect);
+
+                if (filterType === 'CORRECT' && !isCorrect) return;
+                if (filterType === 'WRONG' && !isWrong) return;
+                if (filterType === 'SKIPPED' && !isSkipped) return;
+
+                let statusBadge = '';
+                if (isCorrect) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 text-xs font-extrabold"><i class="fa-solid fa-check mr-1"></i>Correct (+1.0)</span>`;
+                } else if (isSkipped) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-md bg-amber-100 text-amber-800 text-xs font-extrabold"><i class="fa-regular fa-circle mr-1"></i>Blank OMR (0.0)</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-md bg-rose-100 text-rose-800 text-xs font-extrabold"><i class="fa-solid fa-xmark mr-1"></i>Wrong (${appState.negativeMarking ? '-0.33' : '0.0'})</span>`;
+                }
+
+                html += `
+                    <div class="rounded-2xl border border-slate-200 p-5 space-y-3 bg-slate-50/50">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-slate-900 text-white text-xs font-extrabold px-2.5 py-1 rounded">Q.${idx + 1}</span>
+                                <span class="text-xs font-bold text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded border border-indigo-200">${q.topic}</span>
+                            </div>
+                            ${statusBadge}
+                        </div>
+
+                        <div class="space-y-1">
+                            ${appState.langMode !== 'EN' ? `<div class="font-bold text-slate-900 text-sm sm:text-base">${q.qHi}</div>` : ''}
+                            ${appState.langMode !== 'HI' ? `<div class="text-slate-600 text-xs sm:text-sm font-medium">${q.qEn}</div>` : ''}
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 text-xs pt-1">
+                            <span class="px-3 py-1.5 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-950 font-bold">
+                                Official OMR Key: (${letters[q.correct]}) ${q.optionsHi[q.correct]} / ${q.optionsEn[q.correct]}
+                            </span>
+                            <span class="px-3 py-1.5 rounded-lg ${isCorrect ? 'bg-emerald-50 text-emerald-800' : isSkipped ? 'bg-amber-50 text-amber-800' : 'bg-rose-100 text-rose-900'} border font-semibold">
+                                Your OMR Bubble: ${isSkipped ? 'None (Left Blank)' : `(${letters[userOpt]}) ${q.optionsHi[userOpt]}`}
+                            </span>
+                        </div>
+
+                        <div class="p-3.5 rounded-xl bg-white border border-slate-200 text-xs space-y-1.5 leading-relaxed">
+                            ${appState.langMode !== 'EN' ? `<div class="text-slate-800"><strong>व्याख्या:</strong> ${q.expHi}</div>` : ''}
+                            ${appState.langMode !== 'HI' ? `<div class="text-slate-600"><strong>Explanation:</strong> ${q.expEn}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (!html) {
+                html = `<div class="text-center py-8 text-slate-500 text-sm font-semibold">No questions found for this filter.</div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        // ==========================================
+        // CUSTOM QUESTION BUILDER (LOCALSTORAGE)
+        // ==========================================
+        function handleSaveCustomQuestion(e) {
+            e.preventDefault();
+            const part = document.getElementById('cq-part').value;
+            const topic = document.getElementById('cq-topic').value.trim();
+            const qHi = document.getElementById('cq-q-hi').value.trim();
+            const qEn = document.getElementById('cq-q-en').value.trim();
+            const optA = document.getElementById('cq-optA').value.trim();
+            const optB = document.getElementById('cq-optB').value.trim();
+            const optC = document.getElementById('cq-optC').value.trim();
+            const ans = parseInt(document.getElementById('cq-ans').value, 10);
+            const exp = document.getElementById('cq-exp').value.trim();
+
+            const newQ = {
+                id: "CUST_" + Date.now(),
+                part,
+                topic,
+                qHi,
+                qEn,
+                optionsHi: [optA, optB, optC, OPT_D_HI, OPT_E_HI],
+                optionsEn: [optA, optB, optC, OPT_D_EN, OPT_E_EN],
+                correct: ans,
+                expHi: exp,
+                expEn: exp
+            };
+
+            let existing = [];
+            try {
+                const raw = localStorage.getItem('bpsc_tre4_custom_questions');
+                if (raw) existing = JSON.parse(raw);
+            } catch (err) {
+                existing = [];
+            }
+
+            existing.push(newQ);
+            localStorage.setItem('bpsc_tre4_custom_questions', JSON.stringify(existing));
+
+            document.getElementById('custom-q-form').reset();
+            refreshCustomQuestionsList();
+            updateQuestionCountPreview();
+            showToast("Custom 5-Option BPSC Question added to your test bank!");
+        }
+
+        function refreshCustomQuestionsList() {
+            let existing = [];
+            try {
+                const raw = localStorage.getItem('bpsc_tre4_custom_questions');
+                if (raw) existing = JSON.parse(raw);
+            } catch (err) {
+                existing = [];
+            }
+
+            document.getElementById('custom-q-counter').textContent = existing.length;
+            const listEl = document.getElementById('custom-q-list');
+            if (existing.length === 0) {
+                listEl.innerHTML = `<div class="p-4 rounded-xl bg-slate-50 text-slate-400 text-center">No custom questions added yet. Use the form on the left to add your own MCQs!</div>`;
+                return;
+            }
+
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+            listEl.innerHTML = existing.map((q, i) => `
+                <div class="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-start justify-between gap-2">
+                    <div>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">${q.topic}</span>
+                        <div class="font-bold text-slate-800 mt-1">${i + 1}. ${q.qHi}</div>
+                        <div class="text-emerald-700 font-semibold mt-0.5">Correct Key: (${letters[q.correct]})</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearAllCustomQuestions() {
+            localStorage.removeItem('bpsc_tre4_custom_questions');
+            refreshCustomQuestionsList();
+            updateQuestionCountPreview();
+            showToast("Custom questions cleared.");
+        }
+
+        // Toast Helper
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl border border-amber-500/50 flex items-center gap-2 transition-all duration-300";
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-amber-400"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2600);
+        }
+    </script>
+</body>
+</html>
