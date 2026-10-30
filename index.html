@@ -600,7 +600,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
                     <div>
                         <span class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase">
-                            BPSC TRE 4.0 Official OMR Evaluation Report
+                            BPSC TRE 4.0 Practice Evaluation Report
                         </span>
                         <h2 class="text-2xl sm:text-3xl font-black mt-2" id="result-headline">Test Scorecard & Merit Analysis</h2>
                     </div>
@@ -703,7 +703,7 @@
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
                 <div class="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-4">
                     <div>
-                        <span class="text-xs font-extrabold uppercase px-2.5 py-1 rounded bg-amber-100 text-amber-900">Official Notification Summary</span>
+                        <span class="text-xs font-extrabold uppercase px-2.5 py-1 rounded bg-amber-100 text-amber-900">Notification Summary (from BPSC notices)</span>
                         <h2 class="text-xl sm:text-2xl font-black text-slate-900 mt-1">BPSC TRE 4.0 (Advt. No. 15/2026) — 33,320 Vacancies & Pattern (Revised)</h2>
                     </div>
                     <button onclick="switchMainTab('dashboard')" class="px-4 py-2 rounded-xl bg-indigo-900 text-white text-xs font-bold hover:bg-indigo-800 transition">
@@ -951,7 +951,7 @@
     <footer class="bg-slate-900 text-slate-400 text-xs py-4 px-4 border-t border-slate-800 mt-8">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
             <div>
-                <strong>BPSC TRE 4.0 Practice Portal (Advt. 15/2026)</strong> • Built for Bihar Primary, Middle, Secondary & Higher Secondary Aspirants
+                <strong>BPSC TRE 4.0 Practice Portal (Advt. 15/2026)</strong> • Built for Bihar Primary, Middle, Secondary & Higher Secondary Aspirants<br><em>Unofficial practice portal, not affiliated with BPSC. Verify all details on bpsc.bihar.gov.in.</em>
             </div>
             <div class="flex items-center gap-3">
                 <span class="text-amber-400 font-semibold">5-Option OMR Ready</span>
@@ -1102,11 +1102,11 @@
                 topic: "Geography of Bihar - Rivers",
                 qHi: "निम्नलिखित में से कौन-सी नदी बिहार में गंगा नदी में उत्तर दिशा से आकर मिलती है?",
                 qEn: "Which of the following rivers joins the Ganga River from the North in Bihar?",
-                optionsHi: ["गंडक नदी", "कोसी नदी", "बागमती / कमला", OPT_D_HI, OPT_E_HI],
-                optionsEn: ["Gandak River", "Kosi River", "Bagmati / Kamla", OPT_D_EN, OPT_E_EN],
+                optionsHi: ["गंडक नदी", "कोसी नदी", "बूढ़ी गंडक", OPT_D_HI, OPT_E_HI],
+                optionsEn: ["Gandak River", "Kosi River", "Burhi Gandak", OPT_D_EN, OPT_E_EN],
                 correct: 3,
-                expHi: "गंडक, बूढ़ी गंडक, बागमती, कमला और कोसी—ये सभी उत्तर बिहार की नदियाँ हैं जो हिमालय से निकलकर उत्तर दिशा से गंगा प्रणाली में मिलती हैं। अतः उत्तर (D) 'उपर्युक्त में से एक से अधिक' होगा।",
-                expEn: "Gandak, Kosi, and Bagmati are all northern tributaries flowing from the Himalayas into the Ganga basin in North Bihar. Hence Option (D) 'More than one of the above' is correct."
+                expHi: "गंडक, कोसी और बूढ़ी गंडक तीनों उत्तर दिशा से सीधे गंगा में मिलती हैं। (बागमती व कमला पहले कोसी तंत्र में मिलती हैं।) अतः उत्तर (D) 'उपर्युक्त में से एक से अधिक' होगा।",
+                expEn: "Gandak, Kosi and Burhi Gandak all join the Ganga directly from the north (Bagmati and Kamla first join the Kosi system). Hence Option (D) 'More than one of the above' is correct."
             },
             {
                 id: "P2_04",
@@ -2290,7 +2290,7 @@
 
                         <div class="flex flex-wrap gap-2 text-xs pt-1">
                             <span class="px-3 py-1.5 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-950 font-bold">
-                                Official OMR Key: (${letters[q.correct]}) ${q.optionsHi[q.correct]} / ${q.optionsEn[q.correct]}
+                                Answer Key: (${letters[q.correct]}) ${q.optionsHi[q.correct]} / ${q.optionsEn[q.correct]}
                             </span>
                             <span class="px-3 py-1.5 rounded-lg ${isCorrect ? 'bg-emerald-50 text-emerald-800' : isSkipped ? 'bg-amber-50 text-amber-800' : 'bg-rose-100 text-rose-900'} border font-semibold">
                                 Your OMR Bubble: ${isSkipped ? 'None (Left Blank)' : `(${letters[userOpt]}) ${q.optionsHi[userOpt]}`}
